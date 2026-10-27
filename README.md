@@ -52,7 +52,65 @@ Este repositorio documenta la idea inicial. Contiene únicamente este README y l
 - Diseñar las reglas de gamificación.
 - Preparar los proyectos y accesos de Railway, Vercel y Supabase.
 
-Las contribuciones son bienvenidas. Las propuestas pueden presentarse mediante issues y pull requests, coordinando las decisiones técnicas con Ismael.
+## Cómo contribuir
+
+Las contribuciones son bienvenidas. Puedes proponer ideas mediante issues y coordinar las decisiones técnicas con Ismael. Para cambiar archivos, trabaja en una rama y abre un pull request (PR).
+
+### 1. Clona el repositorio y crea tu rama
+
+Si tienes permiso de escritura en este repositorio:
+
+```bash
+git clone https://github.com/orlando-vazquez-career/ciab-community.git
+cd ciab-community
+git switch main
+git pull --ff-only origin main
+git switch -c docs/mi-aporte
+```
+
+Si ya tienes una copia local, entra en su carpeta y omite el comando de clonación. Usa un nombre de rama que describa tu aporte, por ejemplo `docs/mi-aporte`, `feat/nueva-funcionalidad` o `fix/correccion`.
+
+### 2. Guarda y publica tus cambios
+
+Edita los archivos, revisa el diff y crea un commit. Este ejemplo modifica el README; sustituye `README.md` por los archivos concretos de tu aporte:
+
+```bash
+git diff
+git add README.md
+git diff --cached
+git commit -m "docs: describe el aporte"
+git push -u origin docs/mi-aporte
+```
+
+Usa el mismo nombre de rama que elegiste en el paso anterior. Revisa el contenido y realiza las comprobaciones que correspondan a tu cambio; los comandos de instalación y pruebas se documentarán cuando el equipo defina el stack.
+
+### 3. Abre un pull request hacia main
+
+En GitHub, entra en [Pull requests](https://github.com/orlando-vazquez-career/ciab-community/pulls) y selecciona **New pull request**. Elige `main` como rama de destino (**base**) y tu rama como origen (**compare**).
+
+Escribe un título claro y explica qué cambiaste, por qué y cómo lo comprobaste. Abre el PR cuando esté listo para revisión y solicita la revisión de otro colaborador con permiso de escritura.
+
+### 4. Obtén la aprobación de otro colaborador
+
+La rama `main` está protegida. **Para incorporar cambios hace falta un PR aprobado por al menos otro colaborador con permiso de escritura**, distinto del autor y de quien realizó el último push.
+
+- Si añades cambios al PR, las aprobaciones anteriores se invalidan y hay que revisar y aprobar la nueva versión.
+- Responde a la revisión y resuelve las conversaciones pendientes antes de fusionar.
+- Cuando se cumplan los requisitos, un miembro con permiso de escritura podrá fusionar el PR a `main`.
+- La regla se aplica también a administradores y bots, sin excepciones. GitHub Actions no puede aprobar PR.
+- Están bloqueados el force push y el borrado de `main`.
+
+### Si no tienes permiso de escritura
+
+Crea un **fork** en tu cuenta y clona tu fork en lugar del repositorio original. Antes de crear la rama de trabajo, conecta y actualiza la referencia al repositorio original:
+
+```bash
+git remote add upstream https://github.com/orlando-vazquez-career/ciab-community.git
+git fetch upstream
+git switch -c docs/mi-aporte upstream/main
+```
+
+Continúa desde el paso 2: el push irá a tu fork (`origin`). Abre el PR desde esa rama de tu fork hacia `main` de `orlando-vazquez-career/ciab-community`. Se exige la misma revisión y aprobación de otro colaborador.
 
 ## Licencia
 
