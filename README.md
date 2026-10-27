@@ -38,7 +38,7 @@ La infraestructura prevista es:
 | --- | --- |
 | Railway | Despliegue de los servicios que defina la arquitectura. |
 | Vercel | Despliegue del sitio web. |
-| Supabase | Base de datos de la CIAB, bajo una cuenta creada con su correo institucional. |
+| Supabase | Base de datos prevista para la CIAB; cuenta y proyecto por crear o confirmar usando su correo institucional. |
 
 La distribución final de los servicios, la creación o disponibilidad del proyecto de Supabase y los accesos institucionales quedan por confirmar antes de implementar.
 
