@@ -4,24 +4,21 @@ Comunidad open source de la **Cámara de Inteligencia Artificial Boliviana (CIAB
 
 ## La idea
 
-Crear un espacio donde las personas puedan publicar noticias de IA, descubrir novedades y participar en conversaciones con otros miembros. Cada noticia publicada aparecerá automáticamente en el foro y se difundirá en las redes sociales de la CIAB, según las reglas de publicación que defina el equipo.
+Crear un espacio donde las personas puedan publicar noticias de IA, descubrir novedades y participar en conversaciones con otros miembros. Cualquiera puede leer; para publicar, comentar o votar hace falta ser miembro aprobado por un administrador. Las noticias y los debates **pasan por la revisión de un moderador antes de hacerse públicos**.
 
 El objetivo es conectar la información con la conversación y convertir la participación de la comunidad en el motor del sitio.
 
 ## Experiencia prevista
 
-1. Una persona comparte una noticia relevante de IA con su fuente y contexto.
-2. La publicación aparece en el foro, donde otros usuarios pueden leerla y comentarla.
-3. Una integración difunde la noticia en las redes sociales de la CIAB.
-4. Las publicaciones y los comentarios aportan al sistema de gamificación de la comunidad.
-
-Los canales sociales, las reglas de moderación y el momento de la difusión automática se definirán durante el diseño del producto.
+1. Un miembro aprobado comparte una noticia relevante de IA con su fuente y contexto, o abre un debate.
+2. Un moderador la revisa y la publica o la rechaza con un motivo.
+3. Ya publicada, otros miembros la leen, la comentan y la apoyan.
+4. Los aportes validados suman al sistema de gamificación de la comunidad.
+5. **Fase 2 (después del lanzamiento):** una integración difundirá en las redes sociales de la CIAB las noticias aprobadas y marcadas como elegibles.
 
 ## Participación y gamificación
 
-La comunidad tendrá gamificación para incentivar que sus miembros compartan noticias y participen con comentarios útiles. Se podrán evaluar mecanismos como puntos, niveles, insignias o reconocimientos por aportes de calidad.
-
-Las mecánicas concretas y las medidas para evitar spam o participación artificial quedan por definir. La intención es premiar la calidad y la conversación, además de la actividad.
+La gamificación premia **aportes validados**: noticias y debates aprobados, apoyos de miembros con antigüedad, comentarios destacados y reportes confirmados. Vistas, clics y votos propios no suman. Los puntos quedan en un libro mayor auditable, con topes diarios y descuentos si el contenido se oculta. La propuesta de puntos, niveles e insignias está en [`docs/02-requisitos-funcionales.md`](docs/02-requisitos-funcionales.md) (P-01) y espera aprobación del equipo.
 
 ## Equipo
 
@@ -44,13 +41,31 @@ La distribución final de los servicios, la creación o disponibilidad del proye
 
 ## Estado y próximos pasos
 
-Este repositorio documenta la idea inicial. Contiene únicamente este README y la licencia; la aplicación y las integraciones se desarrollarán posteriormente.
+Hay documentación de producto y un borrador del esquema de base de datos con pruebas. La aplicación todavía no se empezó.
 
-- Definir el stack y la arquitectura bajo la dirección de Ismael.
-- Acordar el alcance de la primera versión y los criterios de relevancia de las noticias.
-- Definir la moderación y los canales sociales de la CIAB que se integrarán.
-- Diseñar las reglas de gamificación.
-- Preparar los proyectos y accesos de Railway, Vercel y Supabase.
+| Ruta | Contenido |
+| --- | --- |
+| `docs/` | Plan del MVP, requisitos, modelo de datos y plan de ejecución (borrador 0.3). |
+| `supabase/migrations/` | Esquema inicial: tablas, RLS, moderación y puntos. |
+| `supabase/config.toml`, `supabase/seed.sql` | Configuración del entorno local de Supabase. |
+| `scripts/probar-esquema.mjs` | Pruebas de permisos y puntos. |
+
+Próximos pasos:
+
+- Aprobar el stack (propuesta: Next.js + TypeScript) y las propuestas P-01 a P-05.
+- Crear el proyecto Supabase de la CIAB con el correo institucional y los accesos de Vercel y Railway.
+- Definir los canales sociales de la CIAB para la fase 2.
+
+## Desarrollo
+
+Necesitas Node 20 o superior. **No hace falta Docker.**
+
+```bash
+npm install
+npm run test:db   # aplica la migración en un Postgres en memoria y corre las pruebas
+```
+
+En cada PR, GitHub Actions corre las mismas pruebas dos veces: con PGlite y contra el Postgres real de Supabase (`supabase db start`, con Docker en los servidores de GitHub). El detalle, y cómo usar un proyecto de Supabase en la nube para desarrollo, está en [`docs/03-modelo-de-datos.md`](docs/03-modelo-de-datos.md#entornos-y-pruebas).
 
 ## Cómo contribuir
 
@@ -82,7 +97,7 @@ git commit -m "docs: describe el aporte"
 git push -u origin docs/mi-aporte
 ```
 
-Usa el mismo nombre de rama que elegiste en el paso anterior. Revisa el contenido y realiza las comprobaciones que correspondan a tu cambio; los comandos de instalación y pruebas se documentarán cuando el equipo defina el stack.
+Usa el mismo nombre de rama que elegiste en el paso anterior. Antes de subir cambios en `supabase/` o `scripts/`, corre `npm run test:db` (ver [Desarrollo](#desarrollo)).
 
 ### 3. Abre un pull request hacia main
 

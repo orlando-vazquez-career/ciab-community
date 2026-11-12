@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  # Rápido: Postgres en memoria (PGlite), igual que `npm run test:db` en local.
+  esquema-bd:
+    name: Pruebas de permisos y puntos (PGlite)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:db
+
+  # Completo: Postgres real de Supabase con Docker (los runners de GitHub ya lo traen).
+  # Así se prueba la migración contra el auth real, los roles y los permisos por defecto
+  # de Supabase, sin que nadie necesite Docker en su PC.
+  esquema-bd-supabase:
+    name: Pruebas de permisos y puntos (Supabase real)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - run: npm ci
+      # Levanta solo la base de datos y aplica supabase/migrations + supabase/seed.sql.
+      - run: supabase db start
+      - name: Lint de funciones SQL
+        run: supabase db lint --local --fail-on error
+      - name: Pruebas contra Supabase
+        run: npm run test:db
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
