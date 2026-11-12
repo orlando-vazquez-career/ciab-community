@@ -1,0 +1,15 @@
+{
+  "name": "ciab-community",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test:db": "node scripts/probar-esquema.mjs supabase/migrations/20261110000000_esquema_inicial.sql"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.0",
+    "pg": "^8.23.1"
+  }
+}
