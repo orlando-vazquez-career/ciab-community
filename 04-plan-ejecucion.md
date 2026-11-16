@@ -1,6 +1,6 @@
 # Plan de ejecución — CIAB Community
 
-**Estado:** fases 0 y 1 completadas y verificadas localmente; fase 2 requiere gates separados. La rama `dev` se creará tras registrar los commits del esqueleto.
+**Estado:** fases 0 y 1 completadas y verificadas localmente; fase 2 requiere gates separados. La rama local `dev` ya se creó desde el esqueleto verificado.
 **Actualizado:** 2026-11-16
 
 ## Objetivo
@@ -115,7 +115,7 @@ No asigno fechas ni esfuerzo calendario todavía: faltan confirmar disponibilida
 
 ## Método de ramas y commits
 
-- Una rama por módulo o funcionalidad; se creará `dev` desde el esqueleto verificado y las siguientes funciones partirán de esa rama.
+- Una rama por módulo o funcionalidad; `dev` se creó desde el esqueleto verificado y las siguientes funciones partirán de esa rama.
 - Commits separados por función/capa: por ejemplo UI, backend, pruebas y documentación no se mezclan si son unidades separables.
 - Cada commit explica qué cambió y por qué; documentar verificaciones en el cuerpo del commit.
 - Registrar el estado vigente, pruebas y pendientes en `docs/estado-aplicacion.md`.

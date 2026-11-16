@@ -1,7 +1,7 @@
 # Estado actual de CIAB Community
 
-**Última actualización:** 2026-11-16 · **Rama de trabajo:** `feat/app-foundation` (local; sin push)
-**Estado:** fases 0 y 1 implementadas y verificadas localmente. La rama `dev` se creará después de registrar los commits del esqueleto.
+**Última actualización:** 2026-11-16 · **Rama de trabajo:** `dev` (local; sin push; conserva `feat/app-foundation`)
+**Estado:** fases 0 y 1 implementadas, verificadas y registradas en commits locales. La siguiente funcionalidad partirá de `dev`.
 
 ## Alcance aprobado
 
@@ -57,3 +57,4 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - 2026-11-16 — Se actualizaron requisitos, modelo lógico, plan de ejecución y README; se añadieron reglas CIAB al `AGENTS.md` administrado por Next.js.
 - 2026-11-16 — Se creó el scaffold Next.js/Tailwind y la portada informativa; no se añadió backend ni servicio externo.
 - 2026-11-16 — Se fijaron versiones compatibles tras comprobar los peer ranges; instalación, peers, lint, tipos, build y revisión responsive pasaron.
+- 2026-11-16 — Commits locales: `a995941` (esqueleto web) y `63b4b88` (documentación fase 0). Se creó `dev` desde el esqueleto; no se hizo push.
