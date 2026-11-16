@@ -91,7 +91,7 @@ Escribe un título claro y explica qué cambiaste, por qué y cómo lo comprobas
 
 ### 4. Obtén la aprobación de otro colaborador
 
-La rama `main` está protegida. **La publicación a `main` requiere un PR aprobado por al menos otro colaborador con permiso de escritura**, distinto del autor y de quien realizó el último push. La rama `dev` ya existe localmente desde el esqueleto verificado; su publicación y reglas remotas aún deben configurarse.
+La rama `main` está protegida. **La publicación a `main` requiere un PR aprobado por al menos otro colaborador con permiso de escritura**, distinto del autor y de quien realizó el último push. La rama `dev` ya está publicada en `origin/dev`; para empezar desde otra máquina, actualiza tu copia con `git pull --ff-only origin dev`.
 
 - Si añades cambios al PR, las aprobaciones anteriores se invalidan y hay que revisar y aprobar la nueva versión.
 - Responde a la revisión y resuelve las conversaciones pendientes antes de fusionar.

@@ -1,6 +1,6 @@
 # Plan de ejecución — CIAB Community
 
-**Estado:** fases 0 y 1 completadas y verificadas localmente; fase 2 requiere gates separados. La rama local `dev` ya se creó desde el esqueleto verificado.
+**Estado:** fases 0 y 1 completadas y verificadas; fase 2 requiere gates separados. `dev` está publicada en `origin/dev`.
 **Actualizado:** 2026-11-16
 
 ## Objetivo
@@ -119,7 +119,7 @@ No asigno fechas ni esfuerzo calendario todavía: faltan confirmar disponibilida
 - Commits separados por función/capa: por ejemplo UI, backend, pruebas y documentación no se mezclan si son unidades separables.
 - Cada commit explica qué cambió y por qué; documentar verificaciones en el cuerpo del commit.
 - Registrar el estado vigente, pruebas y pendientes en `docs/estado-aplicacion.md`.
-- Abrir PR de funcionalidades hacia `dev`; publicar hacia `main` mediante PR y revisión requerida. Esta tarea no hace push ni cambia reglas de GitHub.
+- Abrir PR de funcionalidades hacia `dev`; publicar hacia `main` mediante PR y revisión requerida. `dev` se publicó con autorización; no se cambiaron reglas remotas ni `main`.
 
 ## Referencias técnicas oficiales
 

@@ -1,13 +1,13 @@
 # Estado actual de CIAB Community
 
-**Última actualización:** 2026-11-16 · **Rama de trabajo:** `dev` (local; sin push; conserva `feat/app-foundation`)
-**Estado:** fases 0 y 1 implementadas, verificadas y registradas en commits locales. La siguiente funcionalidad partirá de `dev`.
+**Última actualización:** 2026-11-16 · **Rama de trabajo:** `dev` (`origin/dev` sincronizada; conserva `feat/app-foundation` local)
+**Estado:** fases 0 y 1 implementadas, verificadas y publicadas. La siguiente funcionalidad partirá de `dev`.
 
 ## Alcance aprobado
 
 - Fases 0 y 1: documentos base, instrucciones de agentes, registro de estado y esqueleto web informativo.
 - No incluye autenticación, API funcional, Supabase, SQL/migraciones, Railway, proyecto Vercel, claves ni despliegue.
-- Ningún cambio remoto o de producción se realizó.
+- Se publicó `dev` en `origin/dev`; no se modificó `main`, sus reglas ni se desplegó la aplicación.
 
 ## Decisiones registradas
 
@@ -57,4 +57,5 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - 2026-11-16 — Se actualizaron requisitos, modelo lógico, plan de ejecución y README; se añadieron reglas CIAB al `AGENTS.md` administrado por Next.js.
 - 2026-11-16 — Se creó el scaffold Next.js/Tailwind y la portada informativa; no se añadió backend ni servicio externo.
 - 2026-11-16 — Se fijaron versiones compatibles tras comprobar los peer ranges; instalación, peers, lint, tipos, build y revisión responsive pasaron.
-- 2026-11-16 — Commits locales: `a995941` (esqueleto web) y `63b4b88` (documentación fase 0). Se creó `dev` desde el esqueleto; no se hizo push.
+- 2026-11-16 — Commits: `a995941` (esqueleto web), `63b4b88` (documentación fase 0) y `5115c52` (cierre y rama `dev`).
+- 2026-11-16 — Se publicó `dev` a `origin/dev`; la verificación inicial de `ls-remote` coincidió con `5115c52`. No se publicaron otras ramas.
