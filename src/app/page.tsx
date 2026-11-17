@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const principles = [
   {
     number: "01",
@@ -30,6 +32,13 @@ export default function Home() {
         <nav aria-label="Navegación principal" className="main-nav">
           <a href="#proposito">El propósito</a>
           <a href="#estado">Estado del proyecto</a>
+          <Link
+            aria-label="Acceso de miembros, aún no disponible"
+            className="nav-access"
+            href="/acceso"
+          >
+            Acceso
+          </Link>
           <span className="nav-location">BOLIVIA · IA</span>
         </nav>
       </header>
@@ -90,7 +99,7 @@ export default function Home() {
             y los comentarios todavía no están habilitados.
           </p>
         </div>
-        <span className="status-tag">FASE 01 / BASE WEB</span>
+        <span className="status-tag">ACCESO / EN PREPARACIÓN</span>
       </section>
 
       <footer className="site-footer">

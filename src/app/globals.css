@@ -60,6 +60,19 @@ a:focus-visible {
 .main-nav { display: flex; align-items: center; gap: 34px; font-size: 12px; }
 .main-nav a, .site-footer a { text-decoration: none; }
 .main-nav a:hover, .site-footer a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.main-nav .nav-access {
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  transition: background .2s ease, border-color .2s ease;
+}
+.main-nav .nav-access:hover {
+  border-color: var(--accent-dark);
+  background: var(--accent);
+  text-decoration: none;
+}
 .nav-location { color: var(--ink-muted); font-size: 9px; letter-spacing: .15em; }
 
 .hero {
@@ -120,8 +133,9 @@ a:focus-visible {
 @media (max-width: 760px) {
   .site-shell { width: min(100% - 40px, 620px); }
   .site-header { min-height: 74px; }
-  .main-nav { gap: 17px; }
+  .main-nav { gap: 12px; }
   .main-nav a { font-size: 10px; }
+  .main-nav .nav-access { padding: 7px 9px; font-size: 9px; }
   .nav-location { display: none; }
   .hero { min-height: auto; grid-template-columns: 1fr; gap: 50px; padding: 82px 4px 66px; }
   .hero h1 { max-width: 600px; font-size: clamp(56px, 12vw, 84px); }
@@ -141,4 +155,272 @@ a:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01ms !important; }
+}
+
+.access-page {
+  display: flex;
+  width: min(100% - 96px, 1320px);
+  min-height: 100svh;
+  flex-direction: column;
+  margin-inline: auto;
+}
+
+.access-header {
+  display: flex;
+  min-height: 92px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.access-return-link {
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color .2s ease;
+}
+
+.access-return-link:hover { border-color: var(--accent-dark); }
+
+.access-return-link:focus-visible,
+.access-footer a:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 5px;
+}
+
+.access-content {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1.1fr) minmax(340px, .8fr);
+  align-items: center;
+  gap: clamp(42px, 8vw, 128px);
+  padding: 76px clamp(16px, 7vw, 104px);
+}
+
+.access-intro,
+.access-card { min-width: 0; }
+
+.access-intro { max-width: 590px; }
+
+.access-kicker {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .17em;
+}
+
+.access-intro h1 {
+  margin: 25px 0 22px;
+  font-family: var(--serif);
+  font-size: clamp(50px, 6.2vw, 84px);
+  font-weight: 400;
+  letter-spacing: -.06em;
+  line-height: .99;
+}
+
+.access-intro-copy {
+  max-width: 500px;
+  margin: 0;
+  color: #465c60;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.access-policy-note {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 14px;
+  max-width: 500px;
+  margin-top: 34px;
+  padding-top: 19px;
+  border-top: 1px solid var(--line);
+}
+
+.access-policy-number {
+  color: var(--accent-dark);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+.access-policy-note p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.access-card {
+  width: 100%;
+  max-width: 460px;
+  justify-self: end;
+  padding: clamp(26px, 3.4vw, 42px);
+  border: 1px solid var(--line);
+  background: rgb(255 255 255 / 30%);
+}
+
+.access-status-badge {
+  display: inline-flex;
+  padding: 7px 10px;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.access-card h2 {
+  margin: 23px 0 9px;
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -.035em;
+}
+
+.access-card-copy {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.access-preview-fields {
+  min-width: 0;
+  margin: 25px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.access-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.access-field-group {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 17px;
+}
+
+.access-field-group label {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.access-field-group input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink-muted);
+  font: inherit;
+}
+
+.access-field-group input:disabled { cursor: not-allowed; opacity: .72; }
+
+.access-submit-button {
+  width: 100%;
+  min-height: 49px;
+  border: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.access-submit-button:disabled { cursor: not-allowed; opacity: .54; }
+
+.access-privacy-note {
+  margin: 18px 0 0;
+  padding: 12px 13px;
+  border-left: 3px solid var(--accent-dark);
+  background: var(--paper);
+  color: var(--ink-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.access-card-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 23px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: 9px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.access-footer {
+  display: flex;
+  min-height: 74px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: 9px;
+  letter-spacing: .12em;
+}
+
+.access-footer a {
+  color: var(--ink);
+  font-size: 10px;
+  letter-spacing: 0;
+  text-decoration: none;
+}
+
+.access-footer a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 900px) {
+  .access-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 42px;
+    padding: 62px clamp(8px, 5vw, 48px);
+  }
+
+  .access-intro { max-width: 680px; }
+
+  .access-intro h1 {
+    max-width: 620px;
+    font-size: clamp(50px, 8vw, 76px);
+  }
+
+  .access-card { max-width: 560px; justify-self: start; }
+}
+
+@media (max-width: 600px) {
+  .access-page { width: min(100% - 40px, 620px); }
+  .access-header { min-height: 74px; }
+  .access-return-link { font-size: 10px; }
+  .access-content { gap: 35px; padding: 52px 0 48px; }
+
+  .access-intro h1 {
+    margin: 21px 0 17px;
+    font-size: clamp(44px, 12vw, 62px);
+  }
+
+  .access-intro-copy { font-size: 14px; }
+  .access-policy-note { margin-top: 27px; }
+  .access-card { padding: 24px 20px; }
+  .access-card h2 { font-size: 28px; }
+
+  .access-footer {
+    min-height: 82px;
+    flex-wrap: wrap;
+    padding: 17px 0;
+  }
 }

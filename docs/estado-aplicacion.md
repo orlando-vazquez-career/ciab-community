@@ -1,12 +1,13 @@
 # Estado actual de CIAB Community
 
-**Última actualización:** 2026-11-16 · **Rama de trabajo:** `dev` (`origin/dev` sincronizada; conserva `feat/app-foundation` local)
-**Estado:** fases 0 y 1 implementadas, verificadas y publicadas. La siguiente funcionalidad partirá de `dev`.
+**Última actualización:** 2026-11-17 · **Rama de trabajo:** `feat/login-ui`, creada desde `dev`; `origin/dev` permanece intacta.
+**Estado:** fases 0 y 1 completas y publicadas. La interfaz `/acceso` está implementada y verificada; la autenticación real no está habilitada.
 
 ## Alcance aprobado
 
 - Fases 0 y 1: documentos base, instrucciones de agentes, registro de estado y esqueleto web informativo.
-- No incluye autenticación, API funcional, Supabase, SQL/migraciones, Railway, proyecto Vercel, claves ni despliegue.
+- Interfaz visual `/acceso` en preparación, con controles deshabilitados y sin captura de credenciales.
+- No incluye autenticación funcional, API, base de datos, Supabase, SQL/migraciones, Railway, proyecto Vercel, claves ni despliegue.
 - Se publicó `dev` en `origin/dev`; no se modificó `main`, sus reglas ni se desplegó la aplicación.
 
 ## Decisiones registradas
@@ -27,10 +28,11 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 ## Implementación
 
 - `src/app/page.tsx`: portada informativa, sin registro ni acciones de producto simuladas.
+- `src/app/acceso/page.tsx`: vista informativa de acceso; no autentica ni registra usuarios y advierte que no se ingresen datos reales.
 - `src/app/layout.tsx`: raíz en español y metadata.
-- `src/app/globals.css`: estilos responsive; la UI deja explícito que la plataforma aún está en preparación.
+- `src/app/globals.css`: estilos responsive de la portada y la interfaz de acceso; la UI deja explícito que la plataforma aún está en preparación.
 - `AGENTS.md`: bloque administrado por Next.js más reglas del proyecto para alcance, stack, pruebas, ramas, commits y documentación.
-- **No implementado:** autenticación, membresías, feed real, publicaciones, comentarios persistidos, moderación, votos, puntos, Supabase, RLS, Vercel ni Railway.
+- **No implementado:** autenticación real, membresías, API, feed, publicaciones, comentarios persistidos, moderación, votos, puntos, Supabase, RLS, Vercel ni Railway.
 
 ## Verificación
 
@@ -40,6 +42,9 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - `pnpm run typecheck`: pasó con Node 26.13.1.
 - `pnpm run build`: pasó con Node 26.13.1; `/` y `/_not-found` prerenderizados estáticamente.
 - Navegador local: `GET /` respondió 200; tamaños 390 px y 1440 px sin desbordamiento horizontal; enlace al estado comprobado.
+- Interfaz de acceso: `pnpm run test:login-ui` pasó (2 pruebas); `/acceso` responde 200 y no presenta formularios ni controles habilitados.
+- Interfaz de acceso: revisión visual a 390 px y 1440 px; sin desbordamiento horizontal.
+- Para esta interfaz no se usó ni inició una base de datos; no hubo conexión remota ni despliegue.
 - El Node global del entorno es 24.16.0. La instalación frozen terminó correctamente, pero emitió aviso de `engines`; lint, tipos, build y servidor se ejecutaron con Node 26.13.1 aislado mediante npm, sin cambiar la instalación global. Para desarrollo normal, instalar Node 26.13.1.
 - Sin conexiones remotas, secretos ni despliegues.
 
@@ -59,3 +64,5 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - 2026-11-16 — Se fijaron versiones compatibles tras comprobar los peer ranges; instalación, peers, lint, tipos, build y revisión responsive pasaron.
 - 2026-11-16 — Commits: `a995941` (esqueleto web), `63b4b88` (documentación fase 0) y `5115c52` (cierre y rama `dev`).
 - 2026-11-16 — Se publicó `dev` a `origin/dev`; la verificación inicial de `ls-remote` coincidió con `5115c52`. No se publicaron otras ramas.
+- 2026-11-17 — Se creó `feat/login-ui` desde `dev`; se añadió el enlace de acceso y la página `/acceso` informativa, con controles deshabilitados. No se implementó autenticación ni se usó una base de datos.
+- 2026-11-17 — Pruebas de interfaz (2), lint, typecheck, build y revisión responsive a 390 px y 1440 px: pasaron.
