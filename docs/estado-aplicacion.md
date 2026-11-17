@@ -1,7 +1,7 @@
 # Estado actual de CIAB Community
 
 **Última actualización:** 2026-11-17 · **Rama de trabajo:** `feat/database-security` (creada desde `dev`)
-**Estado:** fases 0 y 1 implementadas, verificadas y publicadas; fases 2 y 3 autorizadas. Se prepara la propuesta DDL/RLS; no se han aplicado migraciones.
+**Estado:** fases 0 y 1 implementadas, verificadas y publicadas; fases 2 y 3 autorizadas. Hay borradores DDL/RLS para revisión; no se han aplicado migraciones.
 
 ## Alcance aprobado
 
@@ -62,3 +62,4 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - 2026-11-16 — Commits: `a995941` (esqueleto web), `63b4b88` (documentación fase 0) y `5115c52` (cierre y rama `dev`).
 - 2026-11-16 — Se publicó `dev` a `origin/dev`; la verificación inicial de `ls-remote` coincidió con `5115c52`. No se publicaron otras ramas.
 - 2026-11-17 — Se autorizaron las fases 2 y 3 y un bootstrap único del primer superadmin solo en local. Se acordó presentar DDL/RLS exacto y esperar aprobación antes de ejecutar migraciones; se creó `feat/database-security` desde `dev`.
+- 2026-11-17 — Se prepararon borradores SQL de esquema/RLS y bootstrap local en `docs/propuestas/`. La política de acceso a categorías/etiquetas de publicaciones pendientes tiene un archivo de corrección para integrar; no se ejecutó SQL ni se inició Docker.
