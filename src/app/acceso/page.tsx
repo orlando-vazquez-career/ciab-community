@@ -79,6 +79,10 @@ export default function AccessPage() {
           <p className="access-privacy-note">
             No escribas datos reales: esta vista no envía ni guarda información.
           </p>
+          <p className="access-register-prompt">
+            ¿Buscas sumarte?{" "}
+            <Link href="/registro">Conoce el proceso de membresía</Link>.
+          </p>
           <div className="access-card-footer">
             <span>Autenticación segura · próximamente</span>
             <span aria-hidden="true">↗</span>

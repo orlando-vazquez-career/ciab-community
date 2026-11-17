@@ -24,3 +24,24 @@ test("el acceso en preparación no solicita ni envía credenciales", async () =>
   assert.match(html, /No escribas datos reales/);
   assert.doesNotMatch(html, /<form(?:\s|>)/i);
 });
+
+test("el acceso ofrece información del proceso de registro", async () => {
+  const response = await fetch(`${baseUrl}/acceso`);
+  const html = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.ok(html.includes('href="/registro"'), "debe enlazar al proceso de registro");
+});
+
+test("el registro en preparación explica la membresía sin recopilar datos", async () => {
+  const response = await fetch(`${baseUrl}/registro`);
+  const html = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.ok(html.includes("Registro de miembros"));
+  assert.ok(html.includes("estado pendiente"));
+  assert.ok(html.includes("membresía activa"));
+  assert.ok(html.includes('href="/acceso"'), "debe ofrecer volver al acceso");
+  assert.doesNotMatch(html, /<(?:form|input|textarea|select)(?:\s|>)/i);
+  assert.match(html, /No escribas datos reales/);
+});

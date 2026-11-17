@@ -1,12 +1,12 @@
 # Estado actual de CIAB Community
 
 **Última actualización:** 2026-11-17 · **Rama de trabajo:** `feat/login-ui`, creada desde `dev`; `origin/dev` permanece intacta.
-**Estado:** fases 0 y 1 completas y publicadas. La interfaz `/acceso` está implementada y verificada; la autenticación real no está habilitada.
+**Estado:** fases 0 y 1 completas y publicadas. Las vistas informativas `/acceso` y `/registro` están implementadas y verificadas; la autenticación y el alta reales no están habilitadas.
 
 ## Alcance aprobado
 
 - Fases 0 y 1: documentos base, instrucciones de agentes, registro de estado y esqueleto web informativo.
-- Interfaz visual `/acceso` en preparación, con controles deshabilitados y sin captura de credenciales.
+- Vistas `/acceso` y `/registro` en preparación; no habilitan el ingreso ni el alta y no capturan datos.
 - No incluye autenticación funcional, API, base de datos, Supabase, SQL/migraciones, Railway, proyecto Vercel, claves ni despliegue.
 - Se publicó `dev` en `origin/dev`; no se modificó `main`, sus reglas ni se desplegó la aplicación.
 
@@ -29,8 +29,9 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 
 - `src/app/page.tsx`: portada informativa, sin registro ni acciones de producto simuladas.
 - `src/app/acceso/page.tsx`: vista informativa de acceso; no autentica ni registra usuarios y advierte que no se ingresen datos reales.
+- `src/app/registro/page.tsx`: explica el ciclo de membresía pendiente, revisión y activación; no incluye formulario.
 - `src/app/layout.tsx`: raíz en español y metadata.
-- `src/app/globals.css`: estilos responsive de la portada y la interfaz de acceso; la UI deja explícito que la plataforma aún está en preparación.
+- `src/app/globals.css`: estilos responsive de la portada y las vistas de acceso/registro; la UI deja explícito que la plataforma aún está en preparación.
 - `AGENTS.md`: bloque administrado por Next.js más reglas del proyecto para alcance, stack, pruebas, ramas, commits y documentación.
 - **No implementado:** autenticación real, membresías, API, feed, publicaciones, comentarios persistidos, moderación, votos, puntos, Supabase, RLS, Vercel ni Railway.
 
@@ -42,9 +43,9 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - `pnpm run typecheck`: pasó con Node 26.13.1.
 - `pnpm run build`: pasó con Node 26.13.1; `/` y `/_not-found` prerenderizados estáticamente.
 - Navegador local: `GET /` respondió 200; tamaños 390 px y 1440 px sin desbordamiento horizontal; enlace al estado comprobado.
-- Interfaz de acceso: `pnpm run test:login-ui` pasó (2 pruebas); `/acceso` responde 200 y no presenta formularios ni controles habilitados.
-- Interfaz de acceso: revisión visual a 390 px y 1440 px; sin desbordamiento horizontal.
-- Para esta interfaz no se usó ni inició una base de datos; no hubo conexión remota ni despliegue.
+- Interfaces de acceso/registro: `pnpm run test:login-ui` pasó (4 pruebas); ambas rutas responden 200 y no envían ni guardan datos.
+- Interfaces de acceso/registro: revisión visual a 390 px y 1440 px; sin desbordamiento horizontal.
+- Para estas interfaces no se usó ni inició una base de datos; no hubo conexión remota ni despliegue.
 - El Node global del entorno es 24.16.0. La instalación frozen terminó correctamente, pero emitió aviso de `engines`; lint, tipos, build y servidor se ejecutaron con Node 26.13.1 aislado mediante npm, sin cambiar la instalación global. Para desarrollo normal, instalar Node 26.13.1.
 - Sin conexiones remotas, secretos ni despliegues.
 
@@ -66,3 +67,5 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - 2026-11-16 — Se publicó `dev` a `origin/dev`; la verificación inicial de `ls-remote` coincidió con `5115c52`. No se publicaron otras ramas.
 - 2026-11-17 — Se creó `feat/login-ui` desde `dev`; se añadió el enlace de acceso y la página `/acceso` informativa, con controles deshabilitados. No se implementó autenticación ni se usó una base de datos.
 - 2026-11-17 — Pruebas de interfaz (2), lint, typecheck, build y revisión responsive a 390 px y 1440 px: pasaron.
+- 2026-11-17 — Se añadió `/registro` como guía del proceso de membresía pendiente, sin formulario ni captura de datos; `/acceso` enlaza a esa explicación.
+- 2026-11-17 — Pruebas de interfaz (4), lint, typecheck, build y revisión de `/acceso` y `/registro` a 390 px y 1440 px: pasaron; no se usó base de datos.
