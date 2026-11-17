@@ -1,4 +1,5 @@
--- CIAB COMMUNITY — BOOTSTRAP ÚNICO DEL PRIMER SUPERADMIN
+-- CIAB COMMUNITY — PROPUESTA DE BOOTSTRAP DEL PRIMER SUPERADMIN
+-- NO AUTORIZADO PARA EJECUCIÓN. Requiere autorización específica del usuario.
 -- LOCAL-ONLY: ejecutar únicamente dentro de Supabase local en Docker,
 -- conectado como postgres mediante `supabase db connect --local`.
 -- Después de registrar al usuario, ejecutar este archivo en psql con `\i`.

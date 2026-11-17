@@ -1,7 +1,7 @@
 # Plan de producto y arquitectura — CIAB Community
 
-**Versión:** 1.0 · **Estado:** aprobado para ejecutar las fases 0 y 1; fases posteriores requieren gates separados.
-**Actualizado:** 2026-11-16
+**Versión:** 1.1 · **Estado:** alcance local de MVP aprobado; fases 0 y 1 completadas y fases 2–7 autorizadas bajo sus límites documentados.
+**Actualizado:** 2026-11-17
 
 ## Decisiones confirmadas
 
@@ -10,6 +10,9 @@
 - Existe el rol `superadmin`; asignaciones de roles privilegiados requieren aprobación y nadie puede elevar sus propios permisos.
 - Noticias y debates pasan por revisión antes de hacerse públicos.
 - Los comentarios se muestran al enviarse, sin aprobación previa; podrán ocultarse o eliminarse mediante moderación posterior.
+- El autor no edita ni elimina comentarios en el MVP; la moderación administra su ocultamiento/eliminación.
+- Noticias requieren fuente; los debates pueden enviarse sin fuente. La regla editorial para afirmaciones factuales en debates sigue pendiente.
+- Cada miembro puede emitir un voto positivo por publicación; en el MVP no se retira ni cambia.
 - Los puntos reconocen aportes validados, no vistas, clics ni votos propios.
 - El ranking será mensual e histórico; habrá niveles e insignias.
 - Vercel será el hosting web del MVP. Railway queda reservado para el worker social de fase 2.
@@ -45,9 +48,9 @@ El MVP tendrá una aplicación web en Vercel y una única fuente de datos futura
 
 Incluir el ciclo principal de comunidad —publicar, revisar antes de publicar, conversar y reconocer contribuciones validadas—, pero dejar la publicación automática en redes para fase 2 hasta que CIAB defina canales, reglas y accesos API. El MVP no necesita microservicios ni una segunda base de datos.
 
-## Gates pendientes para fases posteriores
+## Gates pendientes antes del lanzamiento
 
-- Procedimiento seguro y responsable que habilitará al primer `superadmin`; nadie puede autoasignarse ese rol.
-- Edición/eliminación por el autor y tratamiento de solicitudes de privacidad/eliminación.
-- Fuente obligatoria para debates que presenten afirmaciones verificables.
+- Tratamiento de solicitudes de privacidad/eliminación y retención de cuentas.
+- Regla editorial para exigir fuentes en debates con afirmaciones factuales.
+- El bootstrap del primer `superadmin` se implementará como operación local de un solo uso para una cuenta ya registrada; no se ejecutará ni creará un superadmin sin autorización específica posterior.
 - Para fase 2: redes, cuentas, aprobación editorial y accesos API.

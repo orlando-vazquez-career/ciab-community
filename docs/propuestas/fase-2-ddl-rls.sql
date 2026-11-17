@@ -663,16 +663,26 @@ CREATE POLICY post_categories_visible_read ON public.post_categories
     FOR SELECT TO anon, authenticated USING (private.can_read_post(post_id));
 CREATE POLICY post_categories_owner_pending_insert ON public.post_categories
     FOR INSERT TO authenticated
-    WITH CHECK (EXISTS (
-        SELECT 1 FROM public.posts AS post_row
-        WHERE post_row.id = post_id AND post_row.author_id = (SELECT auth.uid()) AND post_row.status = 'pending_review'
-    ));
+    WITH CHECK (
+        private.is_active_member()
+        AND EXISTS (
+            SELECT 1 FROM public.posts AS post_row
+            WHERE post_row.id = post_id AND post_row.author_id = (SELECT auth.uid()) AND post_row.status = 'pending_review'
+        )
+        AND EXISTS (
+            SELECT 1 FROM public.categories AS category_row
+            WHERE category_row.id = category_id AND category_row.is_active
+        )
+    );
 CREATE POLICY post_categories_owner_pending_delete ON public.post_categories
     FOR DELETE TO authenticated
-    USING (EXISTS (
-        SELECT 1 FROM public.posts AS post_row
-        WHERE post_row.id = post_id AND post_row.author_id = (SELECT auth.uid()) AND post_row.status = 'pending_review'
-    ));
+    USING (
+        private.is_active_member()
+        AND EXISTS (
+            SELECT 1 FROM public.posts AS post_row
+            WHERE post_row.id = post_id AND post_row.author_id = (SELECT auth.uid()) AND post_row.status = 'pending_review'
+        )
+    );
 
 CREATE POLICY tags_public_read ON public.tags
     FOR SELECT TO anon, authenticated USING (true);
@@ -685,16 +695,22 @@ CREATE POLICY post_tags_visible_read ON public.post_tags
     FOR SELECT TO anon, authenticated USING (private.can_read_post(post_id));
 CREATE POLICY post_tags_owner_pending_insert ON public.post_tags
     FOR INSERT TO authenticated
-    WITH CHECK (EXISTS (
-        SELECT 1 FROM public.posts AS post_row
-        WHERE post_row.id = post_id AND post_row.author_id = (SELECT auth.uid()) AND post_row.status = 'pending_review'
-    ));
+    WITH CHECK (
+        private.is_active_member()
+        AND EXISTS (
+            SELECT 1 FROM public.posts AS post_row
+            WHERE post_row.id = post_id AND post_row.author_id = (SELECT auth.uid()) AND post_row.status = 'pending_review'
+        )
+    );
 CREATE POLICY post_tags_owner_pending_delete ON public.post_tags
     FOR DELETE TO authenticated
-    USING (EXISTS (
-        SELECT 1 FROM public.posts AS post_row
-        WHERE post_row.id = post_id AND post_row.author_id = (SELECT auth.uid()) AND post_row.status = 'pending_review'
-    ));
+    USING (
+        private.is_active_member()
+        AND EXISTS (
+            SELECT 1 FROM public.posts AS post_row
+            WHERE post_row.id = post_id AND post_row.author_id = (SELECT auth.uid()) AND post_row.status = 'pending_review'
+        )
+    );
 
 CREATE POLICY comments_visible_read ON public.comments
     FOR SELECT TO anon, authenticated
