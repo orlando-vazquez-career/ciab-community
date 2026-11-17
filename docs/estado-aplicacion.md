@@ -1,12 +1,13 @@
 # Estado actual de CIAB Community
 
-**Última actualización:** 2026-11-16 · **Rama de trabajo:** `dev` (`origin/dev` sincronizada; conserva `feat/app-foundation` local)
-**Estado:** fases 0 y 1 implementadas, verificadas y publicadas. La siguiente funcionalidad partirá de `dev`.
+**Última actualización:** 2026-11-17 · **Rama de trabajo:** `feat/database-security` (creada desde `dev`)
+**Estado:** fases 0 y 1 implementadas, verificadas y publicadas; fases 2 y 3 autorizadas. Se prepara la propuesta DDL/RLS; no se han aplicado migraciones.
 
 ## Alcance aprobado
 
 - Fases 0 y 1: documentos base, instrucciones de agentes, registro de estado y esqueleto web informativo.
-- No incluye autenticación, API funcional, Supabase, SQL/migraciones, Railway, proyecto Vercel, claves ni despliegue.
+- Fases 2 y 3 autorizadas para desarrollo local. Bootstrap del primer superadmin: procedimiento único, local-only, privilegiado y fuera de UI/API.
+- No se han configurado Supabase CLI, Auth, RLS ni migraciones. El stack local en Docker está autorizado, pero su motor aún no estaba disponible en la verificación; no hay conexión remota, claves ni despliegue.
 - Se publicó `dev` en `origin/dev`; no se modificó `main`, sus reglas ni se desplegó la aplicación.
 
 ## Decisiones registradas
@@ -43,13 +44,14 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - El Node global del entorno es 24.16.0. La instalación frozen terminó correctamente, pero emitió aviso de `engines`; lint, tipos, build y servidor se ejecutaron con Node 26.13.1 aislado mediante npm, sin cambiar la instalación global. Para desarrollo normal, instalar Node 26.13.1.
 - Sin conexiones remotas, secretos ni despliegues.
 
-## Pendientes antes de fase 2
+## Pendientes antes de aplicar migraciones de fase 2
 
-1. Procedimiento y custodio del primer superadmin; cantidad/reemplazo de superadmins.
-2. Reglas para edición/eliminación por autor y solicitudes de privacidad.
-3. Si debates con afirmaciones factuales requieren siempre una fuente.
-4. Aprobar modelo de acceso, DDL y RLS antes de migraciones.
-5. Confirmar accesos institucionales de Supabase antes de cualquier integración remota.
+1. Revisar y aprobar el DDL/RLS exacto antes de aplicar migraciones.
+2. Confirmar la convención de nombres de PK compatible con PostgreSQL.
+3. Iniciar Docker Desktop: el CLI está instalado, pero el motor no estaba disponible en la verificación del 2026-11-17.
+4. Reglas para edición/eliminación por autor y solicitudes de privacidad; pendiente para las funciones correspondientes.
+5. Si debates con afirmaciones factuales requieren siempre una fuente; pendiente para fase 4.
+6. No hay conexión a proyecto Supabase remoto autorizada ni configurada.
 
 ## Bitácora
 
@@ -59,3 +61,4 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - 2026-11-16 — Se fijaron versiones compatibles tras comprobar los peer ranges; instalación, peers, lint, tipos, build y revisión responsive pasaron.
 - 2026-11-16 — Commits: `a995941` (esqueleto web), `63b4b88` (documentación fase 0) y `5115c52` (cierre y rama `dev`).
 - 2026-11-16 — Se publicó `dev` a `origin/dev`; la verificación inicial de `ls-remote` coincidió con `5115c52`. No se publicaron otras ramas.
+- 2026-11-17 — Se autorizaron las fases 2 y 3 y un bootstrap único del primer superadmin solo en local. Se acordó presentar DDL/RLS exacto y esperar aprobación antes de ejecutar migraciones; se creó `feat/database-security` desde `dev`.

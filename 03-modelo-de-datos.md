@@ -1,7 +1,7 @@
 # Modelo de datos inicial — CIAB Community
 
-**Versión:** 1.0 lógico. El DDL y las políticas RLS se implementan en fase 2, después de aprobar el bootstrap del primer superadmin.
-**Actualizado:** 2026-11-16
+**Versión:** 1.0 lógico. El DDL/RLS se presentará para aprobación antes de aplicar migraciones. El bootstrap del primer superadmin está autorizado solo para Supabase local en Docker, mediante un proceso único no expuesto a UI/API.
+**Actualizado:** 2026-11-17
 
 ## Principios
 

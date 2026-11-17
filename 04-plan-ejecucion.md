@@ -1,7 +1,7 @@
 # Plan de ejecución — CIAB Community
 
-**Estado:** fases 0 y 1 completadas y verificadas; fase 2 requiere gates separados. `dev` está publicada en `origin/dev`.
-**Actualizado:** 2026-11-16
+**Estado:** fases 0 y 1 completadas; fases 2 y 3 autorizadas. En `feat/database-security`, el DDL/RLS sigue pendiente de aprobación antes de aplicar migraciones. `dev` está publicada en `origin/dev`.
+**Actualizado:** 2026-11-17
 
 ## Objetivo
 
@@ -48,7 +48,7 @@ El MVP tiene un único destino de aplicación: Vercel. Railway no forma parte de
 
 ### Fase 2 — Base de datos y seguridad
 
-**Trabajo:** inicializar Supabase local; cerrar bootstrap del primer superadmin; crear migraciones para perfiles, acceso/membresías, categorías, publicaciones, comentarios, votos, reportes, moderación y gamificación; configurar Storage. Añadir políticas RLS y permisos mínimos por rol.
+**Trabajo:** inicializar Supabase local en Docker; implementar el bootstrap único local del primer superadmin ya autorizado; presentar DDL/RLS para aprobación antes de aplicar migraciones; crear esquema, políticas y pruebas según el modelo aprobado.
 
 **Entregable:** esquema versionado, datos de prueba y pruebas SQL de autorización.
 
@@ -106,8 +106,8 @@ Publicación automática en redes, mensajes privados, notificaciones en tiempo r
 
 ## Dependencias y puntos de aprobación
 
-1. Fases 0 y 1 autorizadas en esta tarea.
-2. Aprobación específica del bootstrap superadmin y DDL/RLS antes de la fase 2.
+1. Fases 0 y 1 completadas; fases 2 y 3 autorizadas para desarrollo local.
+2. Bootstrap del primer superadmin aprobado solo para local; aprobación del DDL/RLS exacto pendiente antes de aplicar migraciones.
 3. Disponibilidad de accesos institucionales antes de cualquier integración o despliegue remoto.
 4. Autorización separada antes de cambios en producción.
 
