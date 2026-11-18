@@ -17,6 +17,8 @@
     "test:identity-unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/avatar-validation.test.mjs tests/identity-authorization.test.mjs tests/supabase-config.test.mjs",
     "test:forum-api": "node --test tests/forum-api.test.mjs",
     "test:forum-unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/forum-validation.test.mjs",
+    "test:interactions-api": "node --test tests/interactions-api.test.mjs",
+    "test:interactions-unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/interactions-policy.test.mjs tests/interactions-validation.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
