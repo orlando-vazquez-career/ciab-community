@@ -1,10 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { getCurrentIdentity } from "@/backend/identity/membership";
+import { canReviewPosts } from "@/backend/identity/policy";
 import { getPublishedPostBySlug } from "@/backend/forum/posts";
+import { canCreateComment, canReportContent, canVoteOnPost } from "@/backend/interactions/policy";
+import { listPostComments } from "@/backend/interactions/comments";
+import { hasUserVotedForPost } from "@/backend/interactions/votes";
 import { getLocalSupabaseConfiguration } from "@/backend/supabase/config";
 import { createSupabaseServerClient } from "@/backend/supabase/server";
 import { ForumHeader } from "@/frontend/forum/ForumHeader";
+import { ForumCommentList } from "@/frontend/interactions/ForumCommentList";
+import { PostVoteButton } from "@/frontend/interactions/PostVoteButton";
+import { ReportForm } from "@/frontend/interactions/ReportForm";
 
 export const metadata = { title: "Publicación | CIAB Community" };
 
@@ -56,8 +65,9 @@ export default async function ForumPostPage({ params }: PostPageProps) {
   }
 
   let post: PublishedForumPost;
+  let supabase: SupabaseClient;
   try {
-    const supabase = await createSupabaseServerClient();
+    supabase = await createSupabaseServerClient();
     post = await getPublishedPostBySlug(supabase, slug);
   } catch {
     return (
@@ -78,10 +88,22 @@ export default async function ForumPostPage({ params }: PostPageProps) {
   }
   if (post === null) notFound();
 
+  const [comments, current] = await Promise.all([
+    listPostComments(supabase, post.id).catch(() => null),
+    getCurrentIdentity(supabase).catch(() => ({ kind: "unavailable" as const })),
+  ]);
+  const isAuthenticated = current.kind === "member";
+  const canComment = current.kind === "member" && canCreateComment(current.identity);
+  const canReport = current.kind === "member" && canReportContent(current.identity);
+  const canModerate = current.kind === "member" && canReviewPosts(current.identity);
+  const canVote = current.kind === "member" && canVoteOnPost(current.identity, post.authorId);
+  const voteState = canVote
+    ? await hasUserVotedForPost(supabase, post.id, current.identity.userId).catch(() => null)
+    : null;
   const publishedDate = formatDate(post.publishedAt);
   return (
     <main className="forum-page site-shell" id="main-content">
-      <ForumHeader />
+      <ForumHeader showReview={canModerate} showReports={canModerate} />
       <article className="forum-article">
         <Link className="forum-back-link" href="/foro">← Volver al foro</Link>
         <div className="forum-post-meta">
@@ -114,7 +136,35 @@ export default async function ForumPostPage({ params }: PostPageProps) {
             </a>
           </aside>
         ) : null}
+        <div className="forum-article-engagement">
+          {canVote && voteState !== null ? (
+            <PostVoteButton hasVoted={voteState} postId={post.id} />
+          ) : canVote ? (
+            <p className="forum-form-note">No se pudo consultar el estado del voto.</p>
+          ) : current.kind === "member" && current.identity.status === "active" && current.identity.userId === post.authorId ? (
+            <p className="forum-form-note">No puedes votar tu propia publicación.</p>
+          ) : null}
+          <ReportForm canReport={canReport} isAuthenticated={isAuthenticated} targetId={post.id} targetType="post" />
+        </div>
       </article>
+      {current.kind === "unavailable" ? (
+        <p className="forum-form-note" role="status">No se pudieron comprobar tus permisos; las acciones están deshabilitadas.</p>
+      ) : null}
+      {comments ? (
+        <ForumCommentList
+          canComment={canComment}
+          canModerate={canModerate}
+          canReport={canReport}
+          comments={comments}
+          isAuthenticated={isAuthenticated}
+          postId={post.id}
+        />
+      ) : (
+        <section className="forum-empty-state" role="status">
+          <h2>No se pudieron cargar los comentarios</h2>
+          <p>El resto de la publicación sigue disponible; vuelve a intentarlo más tarde.</p>
+        </section>
+      )}
     </main>
   );
 }
