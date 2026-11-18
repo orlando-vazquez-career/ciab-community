@@ -19,6 +19,8 @@ export type ForumPost = {
   categories: ForumCategory[];
 };
 
+export type ForumPostDetails = ForumPost & { authorId: string };
+
 export type ForumFeed = {
   posts: ForumPost[];
   page: number;
@@ -32,6 +34,7 @@ type RawAuthor = { display_name: string; username: string };
 type RawCategory = ForumCategory;
 type RawPost = {
   id: string;
+  author_id?: string;
   kind: "news" | "discussion";
   title: string;
   slug: string;
@@ -137,9 +140,10 @@ export async function listPublishedPosts(
 export async function getPublishedPostBySlug(
   supabase: SupabaseClient,
   slug: string,
-): Promise<ForumPost | null | undefined> {
+): Promise<ForumPostDetails | null | undefined> {
   const selection = [
     "id",
+    "author_id",
     "kind",
     "title",
     "slug",
@@ -159,7 +163,10 @@ export async function getPublishedPostBySlug(
     .maybeSingle();
 
   if (error) return undefined;
-  return data ? mapPost(data as unknown as RawPost) : null;
+  if (!data) return null;
+  const row = data as unknown as RawPost;
+  if (!row.author_id) return undefined;
+  return { ...mapPost(row), authorId: row.author_id };
 }
 
 export async function listPendingReviewPosts(
