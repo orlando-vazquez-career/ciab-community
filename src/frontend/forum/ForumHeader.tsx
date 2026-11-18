@@ -1,0 +1,21 @@
+import Link from "next/link";
+
+export function ForumHeader({ showReview = false }: { showReview?: boolean }) {
+  return (
+    <header className="forum-header">
+      <Link aria-label="CIAB Community, inicio" className="brand" href="/">
+        <span aria-hidden="true" className="brand-mark">C</span>
+        <span className="brand-name">
+          <strong>CIAB</strong>
+          <span>COMMUNITY</span>
+        </span>
+      </Link>
+      <nav aria-label="Navegación del foro" className="forum-nav">
+        <Link href="/foro">Foro</Link>
+        <Link href="/foro/nueva">Enviar publicación</Link>
+        {showReview ? <Link href="/admin/publicaciones">Revisión</Link> : null}
+        <Link href="/miembro">Mi membresía</Link>
+      </nav>
+    </header>
+  );
+}

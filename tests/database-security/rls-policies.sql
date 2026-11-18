@@ -24,6 +24,10 @@ BEGIN
     IF NOT has_table_privilege('authenticated', 'public.post_tags', 'INSERT') THEN
         RAISE EXCEPTION 'Prueba inválida: authenticated debe tener INSERT para que RLS sea el control probado.';
     END IF;
+    IF NOT has_function_privilege('authenticated', 'public.submit_post(text,text,text,text,text,text,uuid)', 'EXECUTE')
+       OR has_function_privilege('anon', 'public.submit_post(text,text,text,text,text,text,uuid)', 'EXECUTE') THEN
+        RAISE EXCEPTION 'Prueba inválida: submit_post debe ejecutarse solo con rol authenticated.';
+    END IF;
 END;
 $test_guard$;
 
@@ -142,6 +146,19 @@ BEGIN
     END IF;
 END;
 $anonymous_read$;
+DO $anonymous_submit$
+BEGIN
+    BEGIN
+        PERFORM public.submit_post(
+            'discussion', 'Envío anónimo', '', 'Prueba', NULL, NULL,
+            current_setting('ciab.test.active_category_id')::uuid
+        );
+        RAISE EXCEPTION 'anon pudo ejecutar submit_post.';
+    EXCEPTION WHEN insufficient_privilege THEN
+        NULL;
+    END;
+END;
+$anonymous_submit$;
 RESET ROLE;
 
 -- Una cuenta pendiente no puede asociar categorías a su propio borrador.
@@ -158,6 +175,19 @@ BEGIN
     END;
 END;
 $pending_post$;
+DO $pending_submit_rpc$
+BEGIN
+    BEGIN
+        PERFORM public.submit_post(
+            'discussion', 'Envío pendiente', '', 'Prueba', NULL, NULL,
+            current_setting('ciab.test.active_category_id')::uuid
+        );
+        RAISE EXCEPTION 'submit_post permitió enviar contenido a una cuenta pendiente.';
+    EXCEPTION WHEN insufficient_privilege THEN
+        NULL;
+    END;
+END;
+$pending_submit_rpc$;
 DO $pending_category$
 DECLARE
     affected_rows integer;
@@ -265,6 +295,7 @@ SELECT set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000002
 DO $active_post$
 DECLARE
     affected_rows integer;
+    rpc_post_id uuid;
 BEGIN
     INSERT INTO public.posts (kind, title, slug, body_md)
     VALUES ('discussion', 'Envío activo', 'active-submission-allowed', 'Prueba');
@@ -272,6 +303,64 @@ BEGIN
     IF affected_rows <> 1 THEN
         RAISE EXCEPTION 'El miembro activo no pudo enviar una publicación para revisión.';
     END IF;
+
+    rpc_post_id := public.submit_post(
+        'discussion', 'Envío RPC activo', '', 'Prueba atómica', NULL, NULL,
+        current_setting('ciab.test.active_category_id')::uuid
+    );
+    IF NOT EXISTS (
+        SELECT 1 FROM public.posts
+         WHERE id = rpc_post_id AND author_id = '10000000-0000-4000-8000-000000000002'
+           AND status = 'pending_review'
+    ) OR NOT EXISTS (
+        SELECT 1 FROM public.post_categories
+         WHERE post_id = rpc_post_id
+           AND category_id = current_setting('ciab.test.active_category_id')::uuid
+    ) THEN
+        RAISE EXCEPTION 'submit_post no creó publicación pendiente y categoría de forma conjunta.';
+    END IF;
+
+    BEGIN
+        PERFORM public.submit_post(
+            'news', 'Noticia sin fuente', '', 'Contenido', NULL, NULL,
+            current_setting('ciab.test.active_category_id')::uuid
+        );
+        RAISE EXCEPTION 'submit_post aceptó una noticia sin fuente.';
+    EXCEPTION WHEN invalid_parameter_value THEN
+        NULL;
+    END;
+
+    BEGIN
+        PERFORM public.submit_post(
+            'news', 'Fuente extensa', '', 'Contenido',
+            'https://example.org/' || repeat('a', 2048), 'primary',
+            current_setting('ciab.test.active_category_id')::uuid
+        );
+        RAISE EXCEPTION 'submit_post aceptó una URL de fuente superior a 2048 caracteres.';
+    EXCEPTION WHEN invalid_parameter_value THEN
+        NULL;
+    END;
+
+    BEGIN
+        PERFORM public.submit_post(
+            'news', 'Fuente con credenciales', '', 'Contenido',
+            'https://usuario:clave@example.org/noticia', 'primary',
+            current_setting('ciab.test.active_category_id')::uuid
+        );
+        RAISE EXCEPTION 'submit_post aceptó credenciales incrustadas en la URL de fuente.';
+    EXCEPTION WHEN invalid_parameter_value THEN
+        NULL;
+    END;
+
+    BEGIN
+        PERFORM public.submit_post(
+            'discussion', 'Categoría inactiva', '', 'Contenido', NULL, NULL,
+            current_setting('ciab.test.inactive_category_id')::uuid
+        );
+        RAISE EXCEPTION 'submit_post aceptó una categoría inactiva.';
+    EXCEPTION WHEN invalid_parameter_value THEN
+        NULL;
+    END;
 END;
 $active_post$;
 INSERT INTO public.post_categories (post_id, category_id)

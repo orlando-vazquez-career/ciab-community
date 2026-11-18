@@ -8,6 +8,9 @@ export type ApiErrorCode =
   | "AUTHENTICATION_FAILED"
   | "NOT_AUTHENTICATED"
   | "NOT_AUTHORIZED"
+  | "CREATE_FAILED"
+  | "READ_FAILED"
+  | "REVIEW_FAILED"
   | "UPDATE_FAILED"
   | "NOT_FOUND";
 
@@ -57,16 +60,40 @@ export function hasAllowedOrigin(request: Request): boolean {
   }
 }
 
-export async function readJsonBody(request: Request): Promise<unknown | null> {
+export async function readJsonBody(
+  request: Request,
+  maxBytes = 16_384,
+): Promise<unknown | null> {
   const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
   if (!contentType.startsWith("application/json")) return null;
 
   const contentLength = Number(request.headers.get("content-length") ?? 0);
-  if (contentLength > 16_384) return null;
+  if (!Number.isFinite(contentLength) || contentLength > maxBytes) return null;
 
   try {
-    const text = await request.text();
-    if (new TextEncoder().encode(text).byteLength > 16_384) return null;
+    const reader = request.body?.getReader();
+    if (!reader) return null;
+
+    const chunks: Uint8Array[] = [];
+    let totalBytes = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      totalBytes += value.byteLength;
+      if (totalBytes > maxBytes) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+
+    const bytes = new Uint8Array(totalBytes);
+    let offset = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
     return JSON.parse(text) as unknown;
   } catch {
     return null;

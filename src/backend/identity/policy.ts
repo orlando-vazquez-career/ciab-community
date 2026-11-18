@@ -1,5 +1,12 @@
 import type { MemberIdentity } from "./membership";
 
+export function canReviewPosts(identity: MemberIdentity): boolean {
+  return (
+    identity.status === "active" &&
+    (identity.role === "moderator" || identity.role === "admin" || identity.role === "superadmin")
+  );
+}
+
 export function canManageMemberships(identity: MemberIdentity): boolean {
   return (
     identity.status === "active" &&
