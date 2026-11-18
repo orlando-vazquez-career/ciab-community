@@ -12,6 +12,9 @@
     "start": "next start",
     "lint": "eslint .",
     "test:login-ui": "node --test tests/login-ui.test.mjs",
+    "test:identity-api": "node --test tests/identity-api.test.mjs",
+    "test:membership-api": "node --test tests/membership-api.test.mjs",
+    "test:identity-unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/avatar-validation.test.mjs tests/identity-authorization.test.mjs tests/supabase-config.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

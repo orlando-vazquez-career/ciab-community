@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { RegistrationForm } from "@/frontend/identity/RegistrationForm";
 
 export const metadata: Metadata = {
-  title: "Registro en preparación | CIAB Community",
-  description:
-    "El registro de miembros de CIAB Community aún no está habilitado.",
+  title: "Registro de miembros | CIAB Community",
+  description: "Crea tu cuenta y solicita una membresía en CIAB Community.",
 };
 
 export default function RegistrationPage() {
   return (
-    <main className="registration-page">
+    <main className="registration-page" id="main-content">
       <header className="access-header">
         <Link aria-label="CIAB Community, inicio" className="brand" href="/">
           <span aria-hidden="true" className="brand-mark">C</span>
@@ -30,9 +30,8 @@ export default function RegistrationPage() {
             La participación comienza con una membresía activa.
           </h1>
           <p className="access-intro-copy">
-            La comunidad está preparando un proceso de ingreso claro y seguro.
-            Las cuentas nuevas comenzarán con estado pendiente y necesitarán
-            aprobación antes de participar.
+            Confirma tu correo y la cuenta quedará pendiente de revisión. Un
+            administrador debe aprobar la membresía antes de habilitar la participación.
           </p>
           <div className="access-policy-note">
             <span aria-hidden="true" className="access-policy-number">01</span>
@@ -47,32 +46,9 @@ export default function RegistrationPage() {
           aria-labelledby="registration-card-title"
           className="registration-card"
         >
-          <span className="access-status-badge">En preparación</span>
+          <span className="access-status-badge">Solicitud de membresía</span>
           <h2 id="registration-card-title">Registro de miembros</h2>
-          <p className="registration-card-copy" id="registration-state" role="status">
-            El registro todavía no está habilitado; por ahora no recibimos
-            solicitudes.
-          </p>
-
-          <ol aria-describedby="registration-state" className="registration-steps">
-            <li>
-              <strong>Cuenta pendiente</strong>
-              <span>La cuenta comienza con estado pendiente y sin permisos para participar.</span>
-            </li>
-            <li>
-              <strong>Revisión de membresía</strong>
-              <span>El equipo revisa la solicitud antes de habilitarla.</span>
-            </li>
-            <li>
-              <strong>Participación activa</strong>
-              <span>La membresía activa permite publicar, comentar y votar.</span>
-            </li>
-          </ol>
-
-          <p className="access-privacy-note">
-            No escribas datos reales: esta página solo explica el proceso; no
-            envía ni guarda información.
-          </p>
+          <RegistrationForm />
           <Link className="registration-back-link" href="/acceso">
             Volver al acceso de miembros
           </Link>
