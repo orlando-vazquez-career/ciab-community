@@ -1,7 +1,7 @@
 # Plan de ejecución — CIAB Community
 
-**Estado:** fases 0 y 1 completadas y verificadas; fase 2 requiere gates separados. `dev` está publicada en `origin/dev`.
-**Actualizado:** 2026-11-16
+**Estado:** fases 0 y 1 completadas; fases 2–7 autorizadas para implementación y verificación local con datos desechables. DDL/RLS exacto autorizado como migración local, nunca remota/productiva. No se crea ni ejecuta el primer superadmin. Lanzamiento remoto/producción requiere autorización posterior. `dev` está publicada en `origin/dev`.
+**Actualizado:** 2026-11-17
 
 ## Objetivo
 
@@ -14,16 +14,19 @@ Entregar un MVP de comunidad tipo blog/foro para la Cámara de Inteligencia Arti
 - Existe el rol `superadmin`; los roles privilegiados no se autoasignan.
 - Noticias y debates pasan por revisión antes de ser públicos.
 - Comentarios se publican sin aprobación previa y pueden ocultarse/eliminarse después.
+- Autor sin permisos de editar/eliminar comentarios en el MVP; moderación puede ocultarlos, eliminarlos lógicamente o restaurarlos.
+- Voto positivo único por miembro y publicación, no reversible durante el MVP.
+- Fuente obligatoria para noticias y opcional para debates; política para afirmaciones factuales queda pendiente antes del lanzamiento.
 - Puntos solo por contribuciones validadas; sin puntos por vistas, clics ni votos propios.
 - Ranking mensual e histórico, insignias y niveles.
 - Redes sociales fuera del MVP; Railway queda para el worker de fase 2.
 
 ## Arquitectura objetivo
 
-- **Aplicación:** Next.js App Router 16.4.6, React 19.3.1, TypeScript 7.0.2 y Tailwind CSS 4.3.5.
+- **Aplicación:** Next.js App Router 16.4.6, React 19.3.1, TypeScript 6.0.3 y Tailwind CSS 4.3.5.
 - **Runtime/paquetes:** Node.js 26.13.1 y pnpm 12.21.0, fijados en el repositorio.
 - **Vercel:** hosting principal del sitio; no se crea proyecto ni se despliega en fase 1.
-- **Supabase:** Auth, PostgreSQL y Storage; se integra en fase 2 tras aprobar RLS y bootstrap del primer superadmin.
+- **Supabase:** Auth, PostgreSQL y Storage; se integra en fase 2 tras aprobar RLS y verificar un binding local seguro.
 - **Railway:** solo worker/cron de redes en fase 2, no despliegue alternativo del MVP.
 
 El MVP tiene un único destino de aplicación: Vercel. Railway no forma parte de la verificación de la fase 1. Las versiones exactas y su estado se registran en `docs/estado-aplicacion.md`.
@@ -36,7 +39,7 @@ El MVP tiene un único destino de aplicación: Vercel. Railway no forma parte de
 
 **Entregable:** README, plan/RF/modelo v1, `AGENTS.md` y `docs/estado-aplicacion.md`.
 
-**Salida:** instrucciones y decisiones base registradas; las dudas de primer superadmin y edición del autor siguen como gates antes de implementar esas funciones.
+**Salida:** decisiones base versionadas. La privacidad/retención y la política de fuentes para afirmaciones factuales son gates antes del lanzamiento, no bloquean el desarrollo local de la primera versión.
 
 ### Fase 1 — Preparar el proyecto
 
@@ -48,51 +51,51 @@ El MVP tiene un único destino de aplicación: Vercel. Railway no forma parte de
 
 ### Fase 2 — Base de datos y seguridad
 
-**Trabajo:** inicializar Supabase local; cerrar bootstrap del primer superadmin; crear migraciones para perfiles, acceso/membresías, categorías, publicaciones, comentarios, votos, reportes, moderación y gamificación; configurar Storage. Añadir políticas RLS y permisos mínimos por rol.
+**Trabajo:** versionar el DDL/RLS exacto aprobado en una migración y validarlo únicamente en Supabase local desechable; preparar una operación local de bootstrap de un solo uso para una cuenta existente. No ejecutarla ni crear superadmin. No conectar proyectos remotos.
 
-**Entregable:** esquema versionado, datos de prueba y pruebas SQL de autorización.
+**Entregable:** migración versionada para desarrollo local, datos sintéticos de prueba y pruebas SQL de autorización. La ejecución solo se permite en un stack desechable que se elimina tras validar.
 
-**Salida:** un visitante puede leer solo lo publicado; miembro pendiente no puede escribir; miembro activo puede enviar contenido a revisión; solo moderadores/admin pueden aprobarlo; ningún usuario puede elevar su rol o asignarse puntos. Las pruebas de permitir/denegar pasan.
+**Salida:** un visitante puede leer solo lo publicado; miembro pendiente no puede escribir; miembro activo puede enviar contenido a revisión; solo moderadores/admin/superadmin pueden aprobarlo; ningún usuario puede elevar su rol o asignarse puntos. Las pruebas de permitir/denegar pasan.
 
 ### Fase 3 — Identidad y membresía
 
 **Trabajo:** registro/inicio de sesión, perfil público, estado `pending/active/suspended`, pantalla de solicitud/estado y panel administrativo para aprobar o suspender miembros.
 
-**Entregable:** ciclo de acceso funcional con roles member/moderator/admin.
+**Entregable:** ciclo de acceso funcional con roles member/moderator/admin/superadmin; no se crea el primer superadmin automáticamente.
 
 **Salida:** el acceso a acciones protegidas se controla en servidor y BD, no solo ocultando controles en la interfaz.
 
-### Fase 4 — Foro y moderación
+### Fase 4 — Publicaciones y revisión
 
-**Trabajo:** feed público paginado, filtros por categoría, detalle de noticia/debate, fuente externa para noticias, envío a revisión, cola de moderación, aprobación/rechazo, comentarios/respuestas, votos, reportes y perfil público.
+**Trabajo:** feed público paginado, orden reciente/popular, filtros por categoría, detalle de noticias/debates, fuentes para noticias, envío a revisión, cola de moderación y aprobación/rechazo.
 
-**Entregable:** ciclo principal publicar → revisar → conversar.
+**Entregable:** ciclo enviar publicación → revisar → publicar; nada pendiente/rechazado es público.
 
-**Salida:** ningún borrador o publicación pendiente aparece al público; publicación aprobada sí; comentarios, votos y reportes cumplen el RF y los permisos acordados.
+**Salida:** publicación aprobada visible; pendientes, borradores y rechazadas ocultas; cambio sustancial reabre revisión; permisos verificados por RLS y servidor.
 
-### Fase 5 — Gamificación
+### Fase 5 — Comentarios y moderación
 
-**Trabajo:** libro mayor append-only de puntos, reglas versionadas, idempotencia, límites antiabuso, insignias, niveles y tabla de posiciones.
+**Trabajo:** comentarios inmediatos y respuestas de un nivel, reportes, moderación auditada, ocultar/eliminar/restaurar comentarios y votos positivos únicos no reversibles.
 
-**Entregable:** puntos y reconocimientos auditables asociados a aportes validados.
+**Entregable:** conversación y ciclo de revisión de reportes conforme a los permisos aprobados.
 
-**Salida:** eventos repetidos no duplican puntos; correcciones generan eventos compensatorios; clasificación y niveles coinciden con las reglas aprobadas.
+**Salida:** ninguna cuenta pendiente/suspendida escribe; autores no editan/eliminan comentarios; solo roles de moderación realizan acciones auditadas.
 
-### Fase 6 — Calidad, seguridad y accesibilidad
+### Fase 6 — Gamificación
 
-**Trabajo:** pruebas de flujos de usuario, RLS, permisos por rol, validación de URLs, límites anti-spam, experiencia móvil, teclado/contraste, errores y registros operativos.
+**Trabajo:** libro mayor append-only, reglas versionadas, idempotencia, topes de 10 puntos globales y 5 comentarios útiles al día, eventos compensatorios, insignias, niveles y ranking mensual/histórico.
 
-**Entregable:** reporte de pruebas y lista de incidencias resueltas o aceptadas.
+**Entregable:** puntos/reconocimientos auditables asociados a aportes validados.
 
-**Salida:** pruebas críticas pasan; no quedan hallazgos de autorización que permitan ver contenido pendiente o modificar datos privilegiados.
+**Salida:** eventos repetidos no duplican puntos; compensaciones preservan historial; saldos, niveles e insignias coinciden con reglas versionadas.
 
-### Fase 7 — Despliegue y lanzamiento
+### Fase 7 — Calidad y lanzamiento local
 
-**Trabajo:** crear entornos de desarrollo/staging/producción; conectar proyecto Supabase institucional; desplegar previews en Vercel; aplicar migraciones aprobadas; configurar dominio, secretos, logs y respaldo operativo.
+**Trabajo:** pruebas integrales, RLS por rol, límites antiabuso, validación de URL, accesibilidad, teclado/contraste, responsive 390/1440 px, revisión de dependencias, errores y recuperación local. Preparar instrucciones para clonar y probar el proyecto.
 
-**Entregable:** MVP en producción y guía de despliegue/recuperación.
+**Entregable:** MVP local clonable y guía de pruebas/correcciones. Preview Vercel, staging institucional, dominio y producción quedan para una autorización separada.
 
-**Salida:** smoke tests completados en Vercel; Supabase usa el esquema esperado; secretos no están en cliente ni en Git; existe un procedimiento de rollback.
+**Salida:** `pnpm lint`, `pnpm typecheck`, `pnpm build`, pruebas unitarias/integrales y recorrido local pasan; sin secretos ni conexiones remotas; la guía limpia/recrea solo recursos desechables del proyecto.
 
 ### Fase 8 — Fase 2: difusión social
 
@@ -106,10 +109,13 @@ Publicación automática en redes, mensajes privados, notificaciones en tiempo r
 
 ## Dependencias y puntos de aprobación
 
-1. Fases 0 y 1 autorizadas en esta tarea.
-2. Aprobación específica del bootstrap superadmin y DDL/RLS antes de la fase 2.
-3. Disponibilidad de accesos institucionales antes de cualquier integración o despliegue remoto.
-4. Autorización separada antes de cambios en producción.
+1. Fases 0 y 1 completadas; fases 2–7 autorizadas para desarrollo/verificación local y desechable.
+2. El DDL/RLS exacto está autorizado como migración local; no aplicarlo a Supabase remoto o producción.
+3. Preparar bootstrap local one-shot para cuenta existente; no ejecutarlo ni crear superadmin sin autorización específica posterior.
+4. Resolver el binding de Supabase local sin reiniciar Docker Desktop mientras `ky360-mysql` esté en uso.
+5. Disponibilidad de accesos institucionales y autorización antes de cualquier integración o despliegue remoto.
+6. Privacidad/retención y política de fuentes para afirmaciones factuales, antes del lanzamiento.
+7. Autorización separada antes de cambios en producción.
 
 No asigno fechas ni esfuerzo calendario todavía: faltan confirmar disponibilidad semanal del equipo, responsables por fase y tiempo de revisión/aprobación.
 

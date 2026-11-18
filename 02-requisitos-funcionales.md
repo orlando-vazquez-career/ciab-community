@@ -1,7 +1,7 @@
 # Requisitos funcionales — CIAB Community
 
-**Versión:** 1.0 · **Estado:** definiciones base aprobadas para fases 0 y 1; implementación por gates.
-**Actualizado:** 2026-11-16
+**Versión:** 1.1 · **Estado:** decisiones funcionales base aprobadas para desarrollo local; privacidad y política factual de debates son gates de lanzamiento.
+**Actualizado:** 2026-11-17
 
 ## Actores
 
@@ -20,8 +20,8 @@
 | RF-02 | Aprobación de miembros | Toda cuenta inicia en `pending`; la aprobación manual habilita la membresía activa y una suspensión revoca participación. Los roles privilegiados requieren autorización; el titular nunca puede cambiar su rol/estado. |
 | RF-03 | Explorar foro | Cualquier visitante ve el feed paginado de contenido publicado; se puede ordenar por reciente/popular y filtrar por categoría. El contenido pendiente no aparece en el feed público. |
 | RF-04 | Publicar | Un miembro activo envía noticia (título, contexto y fuente) o debate a revisión. Solo aparece después de aprobación. Una edición sustancial de una publicación aprobada vuelve a revisión. |
-| RF-05 | Detalle y comentarios | Miembros activos publican comentarios sin aprobación previa; son visibles al enviarse. Se permiten respuestas de un nivel. Moderación puede ocultar o eliminar comentarios después de publicados. |
-| RF-06 | Voto/reacción | Un miembro activo puede apoyar una publicación una sola vez, retirar o cambiar su voto si se habilita; no puede votarse a sí mismo. No se conceden puntos automáticamente por cada voto recibido sin controles antiabuso. |
+| RF-05 | Detalle y comentarios | Miembros activos publican comentarios sin aprobación previa; son visibles al enviarse. Se permiten respuestas de un nivel. En el MVP el autor no puede editar ni eliminar comentarios; moderadores pueden ocultar, eliminar lógicamente o restaurar con auditoría. |
+| RF-06 | Voto/reacción | Un miembro activo puede emitir un voto positivo por publicación; en el MVP no puede retirarlo ni cambiarlo y no puede votarse a sí mismo. Los votos no otorgan puntos. |
 | RF-07 | Moderación | Miembros reportan publicaciones/comentarios con motivo; moderadores pueden ocultar, eliminar lógicamente o restaurar, registrando actor, acción, objetivo y fecha. |
 | RF-08 | Puntos auditables | Aportes validados generan eventos idempotentes append-only. No puntúan vistas, clics ni votos propios. Se aplican valores, límites y reversos del apartado de gamificación. |
 | RF-09 | Insignias y niveles | Se asignan las insignias iniciales aprobadas y se muestra el nivel calculado por el umbral de puntos. |
@@ -39,7 +39,7 @@
 | Medio general | Exigir autoría y procedencia; corroborar afirmaciones de alto impacto. |
 | Social/anónima/copias/comunicados promocionales | No son evidencia única de una afirmación técnica. Un comunicado puede acreditar lo que una organización anunció, no su validez independiente. |
 
-La noticia debe incluir una URL directa y la revisión comprueba que la fuente respalde el título/contexto. Las noticias se clasifican como `primary`, `institutional`, `specialized_media` o `general_media`. Categorías temáticas iniciales: investigación y ciencia; modelos y herramientas; industria y emprendimiento; educación y comunidad; ética, política y regulación; aplicaciones e infraestructura. Los debates pueden enlazar fuentes; sigue pendiente decidir si toda afirmación factual debe llevar una fuente obligatoria.
+La noticia debe incluir una URL directa y la revisión comprueba que la fuente respalde el título/contexto. Las noticias se clasifican como `primary`, `institutional`, `specialized_media` o `general_media`. Categorías temáticas iniciales: investigación y ciencia; modelos y herramientas; industria y emprendimiento; educación y comunidad; ética, política y regulación; aplicaciones e infraestructura. En el MVP las fuentes de debates son opcionales; la política para afirmaciones factuales queda pendiente antes del lanzamiento y no se aplicará una validación automática.
 
 ## Reglas iniciales de gamificación
 
@@ -68,7 +68,7 @@ Integración automática con redes sociales, notificaciones en tiempo real, mens
 
 ## Gates pendientes antes de las funciones correspondientes
 
-1. Procedimiento de bootstrap y reemplazo del primer superadmin; cantidad de superadmins.
-2. Si el autor puede editar/eliminar su comentario y bajo qué condiciones; solicitudes de privacidad/eliminación.
-3. Si debates sin afirmaciones verificables pueden publicarse sin fuente.
+1. Privacidad, retención y tratamiento de solicitudes de eliminación de cuentas antes del lanzamiento.
+2. Regla editorial para exigir fuente a debates con afirmaciones factuales antes del lanzamiento.
+3. El bootstrap del primer superadmin será una operación local de un solo uso para una cuenta ya registrada. La implementación está autorizada; su ejecución requiere autorización específica posterior. No crear un usuario privilegiado por defecto.
 4. Canales sociales, cuentas y aprobación editorial para fase 2.

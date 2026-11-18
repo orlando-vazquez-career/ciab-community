@@ -1,7 +1,7 @@
 # Modelo de datos inicial — CIAB Community
 
-**Versión:** 1.0 lógico. El DDL y las políticas RLS se implementan en fase 2, después de aprobar el bootstrap del primer superadmin.
-**Actualizado:** 2026-11-16
+**Versión:** 1.1 lógico. Se autorizó versionar el DDL/RLS exacto como migración para uso local desechable; no se autoriza su aplicación remota o productiva. El bootstrap del primer superadmin solo se implementará como operación local de un uso y no se ejecutará sin autorización específica posterior.
+**Actualizado:** 2026-11-17
 
 ## Principios
 
@@ -10,7 +10,7 @@
 - El perfil público se separa del estado/rol de acceso.
 - Puntos como libro mayor append-only: el total se calcula desde eventos y, si hay corrección, se inserta un evento compensatorio que referencia al original; no permitir que el navegador actualice un saldo.
 - Toda tabla expuesta por API lleva RLS y pruebas de autorización; privilegios y transiciones sensibles se hacen por función/servidor seguro.
-- Aplicar al DDL la convención de PK indicada por el usuario; confirmar los nombres físicos al preparar las migraciones.
+- En el candidato PostgreSQL se usa `pk_<tabla>`: nombrar la constraint igual que la tabla colisiona con el índice de respaldo de la PK. Se comprobó en PostgreSQL 18.4. Cambiar el motor para usar otra convención requiere una decisión y reescritura del DDL antes de migrar.
 
 ## Entidades y campos principales
 
@@ -19,12 +19,12 @@
 | `profiles` | `user_id`, `username`, `display_name`, `bio`, `avatar_path`, `created_at`, `updated_at` | `user_id` PK/FK a `auth.users`; `username` único. Solo contiene datos de presentación. |
 | `member_access` | `user_id`, `status`, `role`, `approved_by`, `approved_at` | `user_id` PK/FK; `status`: `pending/active/suspended`; `role`: `member/moderator/admin/superadmin`; rol/estado no modificables por el titular. |
 | `categories` | `id`, `name`, `slug`, `description`, `is_active` | `slug` único; administrada por admin. |
-| `posts` | `id`, `author_id`, `kind`, `title`, `slug`, `excerpt`, `body_md`, `source_url`, `source_class`, `status`, `created_at`, `updated_at`, `published_at` | FK a `profiles`; `kind`: noticia/debate; noticia requiere fuente creíble; `source_class`: `primary/institutional/specialized_media/general_media`; `status`: draft/pending_review/published/hidden/rejected. Solo revisión aprobada la hace pública. |
+| `posts` | `id`, `author_id`, `kind`, `title`, `slug`, `excerpt`, `body_md`, `source_url`, `source_class`, `status`, `created_at`, `updated_at`, `published_at` | FK a `profiles`; `kind`: noticia/debate; noticia requiere fuente creíble; fuente de debate opcional en el MVP; `source_class`: `primary/institutional/specialized_media/general_media`; `status`: `draft/pending_review/published/hidden/rejected`. Solo revisión aprobada la hace pública. |
 | `post_categories` | `post_id`, `category_id` | PK compuesta; relaciones N:M. |
 | `tags` | `id`, `name`, `slug` | `slug` único; catálogo moderado o con creación controlada. |
 | `post_tags` | `post_id`, `tag_id` | PK compuesta; relaciones N:M. |
-| `comments` | `id`, `post_id`, `author_id`, `parent_id`, `body`, `status`, `created_at`, `updated_at` | Se publica al enviarse, sin aprobación previa; `parent_id` opcional para respuestas de un nivel; `status`: `published/hidden/deleted`, con moderación posterior. |
-| `post_votes` | `post_id`, `user_id`, `value`, `created_at` | PK/UNIQUE (`post_id`,`user_id`); una reacción por persona/publicación; no autorreacción. |
+| `comments` | `id`, `post_id`, `author_id`, `parent_id`, `body`, `status`, `created_at`, `updated_at` | Se publica al enviarse; `parent_id` opcional para respuestas de un nivel; el autor no puede editar/eliminar; `status`: `published/hidden/deleted`, solo moderación posterior. |
+| `post_votes` | `post_id`, `user_id`, `value`, `created_at` | PK/UNIQUE (`post_id`,`user_id`); un voto positivo no reversible por miembro/publicación; no autorreacción. |
 | `point_rules` | `id`, `action`, `version`, `points`, `daily_cap`, `is_active`, `created_at` | UNIQUE (`action`,`version`); una versión usada no se edita: se crea otra. Valores y topes iniciales aprobados en RF. |
 | `point_events` | `id`, `user_id`, `point_rule_id`, `reference_type`, `reference_id`, `points`, `idempotency_key`, `created_at`, `reversal_of_event_id` | FK a perfil/regla; `points` conserva el valor aplicado; `idempotency_key` único; las correcciones son eventos compensatorios y el historial no se borra. |
 | `levels` | `id`, `code`, `name`, `minimum_points`, `sort_order`, `is_active` | `code` único; nivel calculado por el umbral más alto. Iniciales: 0, 20, 75 y 200 puntos. |
@@ -80,7 +80,7 @@ erDiagram
 | Ocultar/eliminar/restaurar comentario | No | No | No | Sí | Sí | Sí |
 | Leer/gestionar estado propio | No | Leer propio | Leer propio | Leer propio | Gestionar membresías | Gestionar |
 | Otorgar/revocar roles privilegiados | No | No | No | No | No | Sí, con auditoría |
-| Votos/puntos | No | Sin escritura | Flujo autorizado; consultar solo lo permitido | Auditar | Auditar | Auditar |
+| Votos/puntos | No | Sin escritura | Un voto positivo por publicación; no reversible; sin puntos por votar | Auditar | Auditar | Auditar |
 | Cola social (fase 2) | Sin acceso | Sin acceso | Sin acceso | Sin acceso | Ver estado | Ver estado; worker protegido |
 
 La política SQL concreta debe evitar que un usuario se otorgue rol, estado de miembro, puntos o insignias, y evitar que el worker exponga su clave de servicio en el navegador.
