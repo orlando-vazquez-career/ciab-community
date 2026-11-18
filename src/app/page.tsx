@@ -20,7 +20,7 @@ const principles = [
 
 export default function Home() {
   return (
-    <main className="site-shell">
+    <main className="site-shell" id="main-content">
       <header className="site-header">
         <a aria-label="CIAB Community, inicio" className="brand" href="#inicio">
           <span aria-hidden="true" className="brand-mark">C</span>
@@ -33,7 +33,7 @@ export default function Home() {
           <a href="#proposito">El propósito</a>
           <a href="#estado">Estado del proyecto</a>
           <Link
-            aria-label="Acceso de miembros, aún no disponible"
+            aria-label="Acceso de miembros"
             className="nav-access"
             href="/acceso"
           >
