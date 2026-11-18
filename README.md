@@ -44,9 +44,9 @@ Las versiones exactas y comandos de desarrollo están en [el registro de estado]
 
 ## Estado y próximos pasos
 
-Este repositorio contiene la definición del producto y un esqueleto web informativo. Las fases 2–7 están autorizadas para desarrollo local con datos desechables; autenticación, membresías, publicaciones, moderación y gamificación aún no están implementadas. La migración local está versionada en `supabase/migrations/`; el bootstrap del primer superadmin está preparado, pero no se ejecutará sin autorización específica. No se autorizó conexión a servicios remotos ni despliegue. Consulta [el plan de producto](01-plan-mvp.md), los [requisitos funcionales](02-requisitos-funcionales.md), el [modelo lógico](03-modelo-de-datos.md), el [plan de ejecución](04-plan-ejecucion.md) y el [registro de estado](docs/estado-aplicacion.md).
+Este repositorio contiene la definición del producto, el esqueleto web y la implementación local de identidad/membresía en `feat/identity-membership`: registro, inicio/cierre de sesión, confirmación, estado de membresía, perfil (incluido avatar) y gestión administrativa. Las rutas dependen exclusivamente de Supabase en loopback y fallan cerradas si `CIAB_LOCAL_AUTH_ENABLED` no está habilitado con una configuración segura. El código pasó lint, typecheck, build y pruebas HTTP/unitarias, pero Auth, Storage y las mutaciones no se han probado de extremo a extremo contra Supabase local; no hay servicio remoto ni despliegue. Feed, publicaciones, comentarios, moderación de contenido y gamificación siguen pendientes. La migración está versionada en `supabase/migrations/`; el bootstrap del primer superadmin está preparado, pero no se ejecutará sin autorización específica. Consulta [el plan de producto](01-plan-mvp.md), los [requisitos funcionales](02-requisitos-funcionales.md), el [modelo lógico](03-modelo-de-datos.md), el [plan de ejecución](04-plan-ejecucion.md) y el [registro de estado](docs/estado-aplicacion.md).
 
-- Iniciar la primera funcionalidad aprobada desde `dev`, en una rama propia y con commits separados por capa.
+- Integrar localmente `feat/identity-membership` a `dev` sin publicar commits y comenzar `feat/forum` para el feed y el ciclo de publicaciones/revisión.
 - Validar la migración versionada y las políticas solo en Supabase local desechable, después de configurar binding de puertos solo-local. En este equipo el Supabase CLI publicó puertos en todas las interfaces; no iniciar el stack con la configuración actual de Docker Desktop.
 - Preparar el bootstrap local one-shot del primer superadmin; no ejecutarlo sin autorización específica.
 - Posponer canales y worker de redes sociales hasta la fase 2.
@@ -55,12 +55,14 @@ Este repositorio contiene la definición del producto y un esqueleto web informa
 
 1. Instala Node.js `26.13.1` (versión de `.node-version`) y pnpm `12.21.0` (campo `packageManager`).
 2. Desde la raíz, ejecuta `pnpm install --frozen-lockfile`.
-3. Supabase es solo local: la configuración está en `supabase/config.toml` y las migraciones en `supabase/migrations/`. Después de confirmar que Docker publica los puertos únicamente en `127.0.0.1`, inicia con `pnpm exec supabase start` y aplica desde cero con `pnpm exec supabase db reset --no-seed`.
-4. Para eliminar los datos de prueba y detener únicamente este proyecto: `pnpm exec supabase stop --project-id ciab-community-mvp --no-backup`. No uses `--all`.
+3. Inicia la aplicación con `pnpm run dev` (por defecto, `http://127.0.0.1:3000`). El archivo `.env.local.example` mantiene la autenticación desactivada y no contiene claves.
+4. Supabase es solo local: configuración en `supabase/config.toml`, migraciones en `supabase/migrations/`. No inicies el stack en este equipo hasta confirmar que Docker publica los puertos únicamente en `127.0.0.1`; entonces aplica la migración desde cero con `pnpm exec supabase db reset --no-seed`.
+5. Solo tras verificar ese binding, copia `.env.local.example` a `.env.local`, activa `CIAB_LOCAL_AUTH_ENABLED=true` e introduce la URL loopback y la clave `anon` local obtenidas de la instancia desechable. Nunca uses una URL o clave de proyecto remoto.
+6. Para eliminar los datos de prueba y detener únicamente este proyecto: `pnpm exec supabase stop --project-id ciab-community-mvp --no-backup`. No uses `--all`.
 
 **Seguridad:** el CLI de Supabase usa el binding predeterminado de Docker para los puertos publicados. En el entorno Windows usado durante esta fase se comprobó que quedaron en `0.0.0.0` y `::`; por eso no hay una base local activa y no se debe iniciar el stack allí hasta habilitar binding solo-local. No se cambia ni reinicia Docker Desktop sin autorización.
 
-Después, ejecuta `pnpm run lint`, `pnpm run typecheck` y `pnpm run build`. No hay variables `.env` compartidas ni conexión remota configurada.
+Después, ejecuta `pnpm run lint`, `pnpm run typecheck` y `pnpm run build`. Para pruebas HTTP, inicia Next.js y ejecuta `pnpm run test:login-ui`, `pnpm run test:identity-api` y `pnpm run test:membership-api`; `pnpm run test:identity-unit` no necesita servidor ni base de datos. No se comparte `.env` ni hay conexión remota configurada.
 
 ## Cómo contribuir
 
