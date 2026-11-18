@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  canReviewPosts,
   canManageMemberships,
   canManageRoles,
 } from  "../src/backend/identity/policy.ts";
@@ -23,4 +24,13 @@ test("only an active superadmin can change roles", () => {
   assert.equal(canManageRoles(member("active", "admin")), false);
   assert.equal(canManageRoles(member("pending", "superadmin")), false);
   assert.equal(canManageRoles(member("active", null)), false);
+});
+
+test("solo los miembros activos con rol moderador o superior revisan publicaciones", () => {
+  assert.equal(canReviewPosts(member("active", "moderator")), true);
+  assert.equal(canReviewPosts(member("active", "admin")), true);
+  assert.equal(canReviewPosts(member("active", "superadmin")), true);
+  assert.equal(canReviewPosts(member("active", "member")), false);
+  assert.equal(canReviewPosts(member("pending", "moderator")), false);
+  assert.equal(canReviewPosts(member("suspended", "admin")), false);
 });
