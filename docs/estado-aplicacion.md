@@ -1,7 +1,7 @@
 # Estado actual de CIAB Community
 
-**Última actualización:** 2026-11-18 · **Rama actual:** `feat/identity-membership`, creada desde `dev`; tres commits locales, sin push ni merge a `dev`.
-**Estado:** fases 0 y 1 completas; esquema/RLS de fase 2 versionados. Identidad y membresía están implementadas en código en una rama propia, con separación lógica frontend/backend. El código pasa lint, typecheck, build y pruebas locales; Auth, Storage y mutaciones aún no se han probado de extremo a extremo. Supabase está deshabilitado por defecto y la instancia local sigue detenida por el binding público observado en Docker Desktop; no hay conexión remota.
+**Última actualización:** 2026-11-18 · **Rama actual:** `feat/forum`, creada desde `dev`; commits locales pendientes de integración, sin push.
+**Estado:** fases 0 y 1 completas; esquema/RLS de fase 2 versionados. Identidad/membresía está integrada localmente en `dev`. El módulo de foro incorpora feed reciente paginado, filtros, detalle, envíos a revisión y cola de moderación; su migración aún no se aplicó. Lint, typecheck, build y pruebas unitarias/HTTP sin base de datos pasan. Auth, Storage, consultas y transiciones reales no se han probado de extremo a extremo. Supabase está deshabilitado por defecto y la instancia local sigue detenida por el binding público observado en Docker Desktop; no hay conexión remota.
 
 ## Alcance aprobado
 
@@ -41,22 +41,30 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - `src/app/miembro/` y `src/app/admin/membresias/`: consulta de estado, perfil propio y pantalla de gestión con confirmación para suspensión/cambio de rol.
 - `src/app/acceso/page.tsx` y `src/app/registro/page.tsx`: formularios conectados a endpoints; el uso exige Supabase local configurado y no implica disponibilidad de una instancia Auth.
 - `src/app/layout.tsx`: raíz en español, metadata y enlace para saltar al contenido.
-- `src/app/globals.css`: estilos responsive de la portada, acceso/registro, perfil y membresías.
+- `src/app/globals.css`: estilos responsive de la portada, identidad/membresía y foro.
 - `AGENTS.md`: bloque administrado por Next.js más reglas del proyecto para alcance, stack, pruebas, ramas, commits y documentación.
 - **Configuración local:** `.env.local.example` mantiene el acceso apagado y no incluye claves. Supabase remoto se rechaza incluso si se activa el flag.
-- **No implementado:** feed, publicaciones, comentarios persistidos, moderación de contenido, votos, puntos e insignias. No hay integración remota ni despliegue.
+- `src/backend/forum/`: validación de noticias/debates, fuentes, paginación y consultas públicas/cola de revisión.
+- `src/app/api/forum/`: feed público, envío autenticado a revisión y revisión autorizada mediante funciones SQL existentes.
+- `src/app/foro/` y `src/app/admin/publicaciones/`: feed, detalle, formulario de envío y cola de moderación; las páginas muestran un estado seguro cuando Supabase está apagado.
+- `supabase/migrations/20261118190000_forum_submission.sql`: RPC `submit_post`, transaccional y con validación propia, permisos solo para `authenticated` y sin uso de service role. No se aplicó a ninguna base.
+- **Pendiente:** orden popular, cambios sustanciales de publicaciones aprobadas que reabran revisión, comentarios, reportes, votos, gamificación y verificación integral con una instancia Supabase local segura. No hay integración remota ni despliegue.
 
 ## Verificación
 
 - `pnpm install --frozen-lockfile`: pasó con pnpm 12.21.0 y lockfile sin cambios; la CLI de pnpm emitió un aviso de `engines` al detectar Node global 24.16.0.
 - `pnpm exec supabase config validate`: válido y completo, sin errores ni advertencias.
 - `pnpm peers check`: pasó, sin problemas de peer dependencies.
-- En `feat/identity-membership`: `pnpm run lint`, `pnpm run typecheck` y `pnpm run build` pasaron con Node 26.13.1. El build reconoce `/api/membership/avatar` y las rutas de identidad/membresía.
+- Identidad/membresía: `test:login-ui` 4/4, `test:identity-api` 4/4, `test:membership-api` 6/6 y `test:identity-unit` 11/11 pasaron antes de integrarse localmente en `dev`.
 - DDL fase 2: aplicado desde una base vacía al PostgreSQL 17.6 de un stack Supabase self-hosted efímero, en red Docker interna y sin puertos del host publicados para los servicios probados. Se validaron 16/16 tablas públicas con RLS, 27 políticas públicas, 4 políticas de Storage y 80 constraints públicas, todas validadas.
 - `tests/database-security/rls-policies.sql`: pasó contra los schemas Auth/Storage reales para usuarios anónimos, pendientes, suspendidos, activos, moderadores y administradores; incluye aislamiento de avatares por carpeta y auditoría de moderación/aprobación. Una prueba RED controlada falló al retirar la política pública de Storage y la matriz volvió a pasar al restaurarla. Fixtures revertidos; no se creó superadmin.
 - La validación anterior fue a nivel SQL; no prueba Storage por HTTP ni integra Auth con la aplicación. En el intento posterior del Supabase CLI, los puertos 54321, 54322 y 54324 quedaron publicados en `0.0.0.0` y `::` pese al binding de red configurado. Se detuvo ese proyecto con `--no-backup` y se eliminaron su volumen y red; no se contó el intento como verificación del migration runner. No se conectó un servicio remoto.
 - Navegador local: `GET /` respondió 200; tamaños 390 px y 1440 px sin desbordamiento horizontal; enlace al estado comprobado.
-- Pruebas locales en `feat/identity-membership`: `test:login-ui` 4/4, `test:identity-api` 4/4, `test:membership-api` 6/6 y `test:identity-unit` 11/11. Cubren validación, origen, denegación segura sin Supabase y firmas/tamaños de avatar; no simulan Auth ni Storage reales.
+- Foro: `test:forum-unit` 6/6; `test:forum-api` 7/7 contra un servidor de producción aislado en loopback, con Supabase apagado. Comprueba validación, origen, límite de cuerpo, feed y respuestas de cierre seguro; no simula Auth ni transacciones SQL.
+- Verificación del módulo: `pnpm run lint`, `pnpm run typecheck` y `pnpm run build` pasaron. El build usó un directorio temporal separado para no alterar `.next/dev` del servidor existente; el proceso de verificación se detuvo después.
+- Navegador del foro: en `/foro`, 390 px y 1440 px, `document.documentElement.scrollWidth` coincidió con `innerWidth`; se revisó el estado de Supabase apagado. El feed con datos y formulario autenticado no pudieron revisarse visualmente sin base local.
+- El servidor de desarrollo previo en `127.0.0.1:3100` produjo respuestas incompatibles con el código actual (incluido `Failed to find Server Action` y rechazo de cuerpo extenso); no se terminó ni reinició. La suite HTTP del foro se validó contra un proceso de producción aislado en `127.0.0.1:3101` y pasó 7/7.
+- La migración del foro y la ampliación de `tests/database-security/rls-policies.sql` (incluida validación de URL extensa y con credenciales) no se ejecutaron. No iniciar Supabase hasta resolver el binding de loopback.
 - Interfaces de acceso/registro revisadas a 390 px y 1440 px, sin desbordamiento horizontal. No se inició ni usó una base de datos para estas interfaces.
 - El editor de avatar compila, pero no se pudo revisar visualmente su estado autenticado ni comprobar una subida real porque Supabase local sigue detenido. Un error transitorio de importación en el servidor de desarrollo no volvió a reproducirse: la prueba HTTP de membresía pasó 10 ejecuciones consecutivas y la suite final pasó 6/6.
 - El Node global del entorno es 24.16.0, menor que la versión fijada. Los scripts de verificación se ejecutaron con Node 26.13.1 y pnpm 12.21.0 mediante `npm exec`; no se modificó ninguna herramienta global. Para evitar el aviso de `engines` al instalar, usar Node 26.13.1 directamente.
@@ -64,12 +72,13 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 
 ## Pendientes de verificación e integración local
 
-1. Asegurar binding solo-local en Docker Desktop antes de iniciar Supabase desechable; reaplicar la migración y verificar el historial del migration runner.
-2. Probar Auth, Mailpit, Storage por HTTP, edición de perfil, subida/borrado de avatar, aprobaciones y roles con cuentas locales desechables y validar políticas/RPC. No ejecutar el bootstrap superadmin sin autorización específica.
-3. Revisar el editor autenticado a 390 px y 1440 px cuando la instancia local segura esté disponible.
-4. Definir privacidad, retención y solicitudes de eliminación antes del lanzamiento.
-5. Definir política editorial de fuentes para afirmaciones factuales en debates antes del lanzamiento.
-6. No hay conexión a proyecto Supabase remoto autorizada ni configurada; no desplegar a Vercel ni producción.
+1. Asegurar binding solo-local en Docker Desktop antes de iniciar Supabase desechable; aplicar migraciones desde cero y ejecutar `tests/database-security/rls-policies.sql`, incluyendo `submit_post`.
+2. Probar Auth, Mailpit, Storage por HTTP, edición de perfil, subida/borrado de avatar, membresías, envío y revisión de publicaciones con cuentas locales desechables. No ejecutar el bootstrap superadmin sin autorización específica.
+3. Revisar visualmente feed con datos, formulario autenticado y cola de revisión a 390 px y 1440 px cuando la instancia local segura esté disponible.
+4. Completar orden popular y reapertura de revisión tras cambios sustanciales; continuar con comentarios, reportes y votos en una rama separada.
+5. Implementar gamificación y ranking en su propio módulo.
+6. Definir privacidad, retención y solicitudes de eliminación antes del lanzamiento; resolver política editorial de fuentes para afirmaciones factuales en debates.
+7. No hay conexión a proyecto Supabase remoto autorizada ni configurada; no desplegar a Vercel ni producción.
 
 ## Bitácora
 
@@ -88,3 +97,6 @@ Se probaron TypeScript 7.0.2 y ESLint 10.15.0, pero el stack resuelto no los adm
 - 2026-11-17 — Se versionó `supabase/migrations/20261117170000_phase2_schema_rls.sql`; su contenido normalizado coincide con el candidato (SHA-256 `37ad1ac031167fd3473b38c9a262ba66796e43af5fa9d1dbd041601312c697c6`). `supabase config validate` pasó.
 - 2026-11-18 — Se integraron localmente `feat/login-ui` y `feat/database-security` en `dev`. Pruebas de login UI (4/4), lint, typecheck, build y validación de configuración Supabase pasaron; `origin/dev` no se actualizó.
 - 2026-11-18 — Se implementó registro/login/logout, callback, perfil y administración en `feat/identity-membership`; se añadió carga autenticada de avatar con validación PNG/JPEG/WebP y límite de 5 MiB. Las suites HTTP (4/4, 4/4, 6/6), unitarias (11/11), lint, typecheck y build pasaron. Commits locales por UI/backend/pruebas: `aa8e585`, `6964323`, `0da2842`. Auth/Storage reales siguen pendientes; no se inició Supabase, no se creó superadmin y no se publicó la rama.
+- 2026-11-18 — Se creó `feat/forum` desde `dev`; commits locales separados por UI (`faea859`), backend/migración (`43cb059`) y pruebas (`ab82412`). El módulo incorpora feed reciente, filtro y detalle, envío a revisión y cola para moderadores. Sin push ni integración remota.
+- 2026-11-18 — Verificación del foro: unitarias 6/6, HTTP 7/7 en servidor de producción aislado, suites de identidad HTTP 14/14, identidad unitaria 12/12, lint, typecheck y build. Responsive verificado a 390/1440 px solo para el estado local deshabilitado. El servidor previo en 3100 no se detuvo; el servidor aislado en 3101 se detuvo al terminar.
+- 2026-11-18 — La migración `20261118190000_forum_submission.sql` y el harness SQL ampliado permanecen sin ejecutar; falta validar con una instancia desechable de Supabase atada a loopback. Comentarios, reportes, votos, orden popular y gamificación siguen pendientes.
